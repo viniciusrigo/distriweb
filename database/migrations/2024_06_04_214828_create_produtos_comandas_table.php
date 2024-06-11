@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('produtos_comandas', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->unsignedBigInteger('comandas_id')->nullable(false);
+            $table->unsignedBigInteger('produtos_id')->nullable(false);
+            $table->datetime('data_adicao')->nullable();
+
+            $table->foreign('comandas_id')->references('id')->on('comandas');
+            $table->foreign('produtos_id')->references('id')->on('produtos');
         });
     }
 

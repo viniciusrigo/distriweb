@@ -7,12 +7,12 @@ define('LARAVEL_START', microtime(true));
 
 /*
 |--------------------------------------------------------------------------
-| Check If The Application Is Under Maintenance
+| Verifique se o aplicativo está em manutenção
 |--------------------------------------------------------------------------
 |
-| If the application is in maintenance / demo mode via the "down" command
-| we will load this file so that any pre-rendered content can be shown
-| instead of starting the framework, which could cause an exception.
+| Se a aplicação estiver em modo manutenção/demonstração através do comando "down"
+| carregaremos este arquivo para que qualquer conteúdo pré-renderizado possa ser mostrado
+| em vez de iniciar o framework, o que poderia causar uma exceção.
 |
 */
 
@@ -22,12 +22,12 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
 
 /*
 |--------------------------------------------------------------------------
-| Register The Auto Loader
+| Registre o Auto Loader
 |--------------------------------------------------------------------------
 |
-| Composer provides a convenient, automatically generated class loader for
-| this application. We just need to utilize it! We'll simply require it
-| into the script here so we don't need to manually load our classes.
+| O Composer fornece um carregador de classes conveniente e gerado automaticamente para
+| esta aplicação. Só precisamos utilizá-lo! Nós simplesmente exigiremos isso
+| no script aqui para que não precisemos carregar manualmente nossas classes.
 |
 */
 

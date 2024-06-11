@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Vendedor;
+namespace App\Http\Controllers\Admin;
 
+use App\Models\FluxoCaixa;
 use App\Models\ItemVenda;
 use App\Models\ProdutosVenda;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Caixa;
 use App\Models\CarrinhoVenda;
 use App\Models\FormaPagamento;
 use App\Models\Produto;
@@ -21,13 +23,22 @@ class VendaController extends Controller
     }
 
     public function index(){
+        $caixa_aberto = Caixa::where('status', 'a')->first();
+        if (!isset($caixa_aberto)){
+
+            $alert = "Abra o caixa antes de começar as vendas";
+            session()->flash("alert", $alert);
+
+            return redirect()->route("admin.caixa.index");
+        }
+
         /* VERIFICA SE EXISTE VENDA ABERTA, CASO EXISTA REDIRECIONA PARA VENDA ABERTA */
         $venda = Venda::where("status", "=", "a")->get();
         if(count($venda) > 0){
-            return redirect("vendedor/pdv/venda/".$venda[0]->id);
+            return redirect("admin/pdv/venda/".$venda[0]->id);
         }
         
-        return view("site/vendedor/PDV/index");
+        return view("site/admin/pdv/index");
     }
 
     public function create(Request $request){
@@ -38,14 +49,14 @@ class VendaController extends Controller
 
             $venda = Venda::where("data_venda", "=", $nova_venda["data_venda"])->get();
 
-            return redirect("vendedor/pdv/venda/".$venda[0]->id);
+            return redirect("admin/pdv/venda/".$venda[0]->id);
         } else{
 
             Venda::create($nova_venda); 
 
             $venda = Venda::where("data_venda", "=", $nova_venda["data_venda"])->get();
             
-            return redirect("vendedor/pdv/venda/".$venda[0]->id);
+            return redirect("admin/pdv/venda/".$venda[0]->id);
         }
     }
 
@@ -59,10 +70,10 @@ class VendaController extends Controller
                                                                         ->select("produtos.nome", "produtos.preco", "produtos.preco_promocao", "produtos.promocao", "produtos.codigo_barras", "carrinho_vendas.data_adicao")
                                                                         ->get();
             
-            return view("site/vendedor/PDV/venda", compact("venda", "carrinho"));
+            return view("site/admin/pdv/venda", compact("venda", "carrinho"));
 
         } else {
-            return redirect("vendedor/pdv");
+            return redirect("admin/pdv");
         }
     }
 
@@ -83,9 +94,9 @@ class VendaController extends Controller
         }
 
         /* VERIFICA SE O PRODUTO EXISTE */
-        if(Produto::where("codigo_barras", $codigo_barras)->first() === []){
+        if(Produto::where("codigo_barras", $codigo_barras)->first() == []){
 
-            $error = "Produto não encontrado";
+            $error = "Produto não encontrado, verifique se foi cadastrado";
             session()->flash("error", $error);
 
             return redirect()->back();
@@ -203,6 +214,12 @@ class VendaController extends Controller
     }
 
     public function concluir_venda(Request $request){
+
+        if($request->input("pagamento") == null){
+            $error = "Informe a forma de pagamento";
+            session()->flash("error", $error);
+            return redirect()->back();
+        }
         
         $concluir = $request->all();
         $venda_temp = Venda::where("id", "=", $concluir["vendas_id"])->first();
@@ -210,6 +227,7 @@ class VendaController extends Controller
         $carrinho = CarrinhoVenda::where("vendas_id", $concluir["vendas_id"])->get()->toArray();
         $taxa_pagamento = FormaPagamento::where("id", $concluir["pagamento"])->first();
         $total_taxado = $venda_temp->valor - ($venda_temp->valor / 100 * $taxa_pagamento->taxa);
+        $caixa_aberto = Caixa::where('status', 'a')->first("id");
 
         if($venda_temp->valor == null || $venda_temp->valor == "" || $venda_temp->valor == 0){
             $error = "Sem produtos na venda, adicione...";
@@ -237,6 +255,14 @@ class VendaController extends Controller
             for($i = 0; $i < count($carrinho); $i++){
                 $produtos_venda->create($carrinho[$i]);
             }
+
+            $novo_fluxo = new FluxoCaixa();
+            $novo_fluxo["caixas_id"] = $caixa_aberto->id;
+            $novo_fluxo["venda"] = $concluir["dinheiro"] - $concluir["troco"];
+            $novo_fluxo["dinheiro"] = $concluir["dinheiro"];
+            $novo_fluxo["troco"] = $concluir["troco"];
+            $novo_fluxo["data"] = now();
+            $novo_fluxo->save();
             
             /* CRIA NOVA MOVIMENTAÇÃO FINANCEIRA */
             $nova_movimentacao = new MovimentacoesFinanceira;
@@ -262,7 +288,7 @@ class VendaController extends Controller
             $success = "Venda realizada com sucesso";
             session()->flash("success", $success);
 
-            return redirect("vendedor/pdv");
+            return redirect("admin/pdv");
 
         } else { /* PAGAMENTO EM CARTÃO */
 
@@ -307,10 +333,33 @@ class VendaController extends Controller
             $success = "Venda realizada com sucesso";
             session()->flash("success", $success);
 
-            return redirect("vendedor/pdv");
+            return redirect("admin/pdv");
             
         }
         
+    }
+
+    public function index_vendas(){
+        $vendas = Venda::all();
+        return view("site/admin/vendas/index", compact('vendas'));
+    }
+
+    public function detalhe_venda(string|int $id){
+        $venda = Venda::find($id);
+        $produtos = ProdutosVenda::where('vendas_id', $id)->join("produtos", "produtos_vendas.produtos_id", "=", "produtos.id")->select(
+            "produtos.nome", "produtos.codigo_barras", "produtos.preco"
+        )->get()->toArray();
+        return view("site/admin/vendas/detalhe", compact("venda","produtos"));
+    }
+
+    public function consulta_produtos_ajax(Request $request){
+        $produtos = ProdutosVenda::where('vendas_id', $request->input('id'))->join("produtos", "produtos_vendas.produtos_id", "=", "produtos.id")
+            ->select(
+                "produtos.nome",
+                "produtos.codigo_barras",
+                "produtos.preco"
+            )->get()->toArray();
+        return $produtos;
     }
 
 }

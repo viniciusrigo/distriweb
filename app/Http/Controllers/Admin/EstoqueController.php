@@ -8,6 +8,7 @@ use App\Models\CarrinhoComanda;
 use App\Models\CarrinhoVenda;
 use App\Models\ComandaProduto;
 use App\Models\ItemVenda;
+use App\Models\Lote;
 use App\Models\Produto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class EstoqueController extends Controller
         $search = $request->get("searchProduto");
 
         if ($search != null){
-    
+
             $lista_produtos = Produto::where( function ($query) use ($search){
                 $query->where("codigo_barras","like", $search)->orWhere("nome","like", "%$search%");
             })->get();
@@ -43,7 +44,7 @@ class EstoqueController extends Controller
             return view("site/admin/estoque/produtos/index", compact('lista_produtos', 'qtd_produtos'));
         }
 
-        
+
     }
 
     public function create() {
@@ -59,8 +60,8 @@ class EstoqueController extends Controller
             return redirect()->back();
         } else {
             $dados = $request->all();
-            
-            
+
+
             $dados['preco'] = str_replace(',', '.', $dados['preco']);
             $dados['preco_custo'] = str_replace(',', '.', $dados['preco_custo']);
             $dados['preco_promocao'] = str_replace(',', '.', $dados['preco_promocao']);
@@ -103,7 +104,7 @@ class EstoqueController extends Controller
         $produto->update($request->all());
 
         $success = "Produto atualizado com sucesso";
-        session()->flash("atualizado-success", $success);
+        session()->flash("success", $success);
         return redirect()->route('admin.estoque.produtos.index');
 
     }
@@ -111,45 +112,57 @@ class EstoqueController extends Controller
     public function destroy(string $id, Produto $produto) {
         $verifica_pdv = CarrinhoVenda::where('produtos_id', $id)->get();
         $verifica_comanda = CarrinhoComanda::where('produtos_id', $id)->get();
+        $verifica_lotes = Lote::where('produtos_id', $id)->get();
 
-        if(count($verifica_pdv) > 0 || count($verifica_comanda) > 0) {
-            $error = "Erro ao excluir, pois existem vendas com esse produto";
-            session()->flash("erro_venda", $error);
+        if(count($verifica_pdv) > 0 || count($verifica_comanda) > 0 || count($verifica_lotes) > 0) {
+            $error = "Erro ao excluir, pois existem vendas ou lotes deste produto";
+            session()->flash("error", $error);
             return redirect()->back();
         }
 
         if (!$produto = $produto->find($id)) {
             $error = "Produto não existe";
-            session()->flash("erro_produto", $error);
+            session()->flash("error", $error);
             return redirect()->back();
         } else {
-            
+
             $produto->delete();
 
             $success = "Produto excluído com sucesso";
             session()->flash("success", $success);
             return redirect()->route('admin.estoque.produtos.index');
         }
-        
+
     }
 
     public function atualizar_promocao(Request $request, Produto $produto) {
         $id = $request->input('id_produto');
         $status = $request->input('status_promocao');
+        $produto = Produto::where('id', $id)->first();
 
         if ($status === "desativado") {
-            Produto::where('id', $id)->update(['promocao' => "s"]);
+
+            $produto["promocao"] = "s";
+            $produto["lucro"] = $produto["preco_promocao"] - $produto["preco_custo"];
+            $produto->save();
+
             $success = "Promoção ativada";
-            session()->flash("promocao-success", $success);
+            session()->flash("success", $success);
+
             return redirect()->back();
         } else {
-            Produto::where('id', $id)->update(['promocao' => "n"]);
+
+            $produto["promocao"] = "n";
+            $produto["lucro"] = $produto["preco"] - $produto["preco_custo"];
+            $produto->save();
+
             $success = "Promoção desativada";
-            session()->flash("promocao-success", $success);
+            session()->flash("success", $success);
+
             return redirect()->back();
         }
-        
-        
+
+
     }
 
     public function atualizar_ativo(Request $request) {
@@ -159,16 +172,64 @@ class EstoqueController extends Controller
         if ($status === "desativado") {
             Produto::where('id', $id)->update(['ativo' => "s"]);
             $success = "Produto ativado";
-            session()->flash("ativo-success", $success);
+            session()->flash("success", $success);
             return redirect()->back();
         } else {
             Produto::where('id', $id)->update(['ativo' => "n"]);
             $success = "Produto desativado";
-            session()->flash("ativo-success", $success);
+            session()->flash("success", $success);
             return redirect()->back();
         }
-        
-        
+
+
     }
+
+    public function index_lote(){
+        $lotes = Lote::join("produtos","lotes.produtos_id","=","produtos.id")->select("produtos.nome", "lotes.quantidade", "lotes.codigo_barras", "lotes.preco", "lotes.preco_custo", "lotes.preco_promocao", "lotes.data_cadastro")->get();
+        return view("site/admin/estoque/lotes/index", compact("lotes"));
+    }
+
+    public function novo_lote(Request $request){
+        if($request->input("quantidade") == null){
+            $produto = Produto::where("codigo_barras", $request->input("codigo_barras"))->get();
+            if (count($produto) > 0){
+                $codigo_barras = $request->input("codigo_barras");
+                $divs = '<div class="form-group col-sm-1" style="padding: 3px;">
+                            <label for="quantidade" style="margin: 0px;">QTD<code>*</code></label>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" required autofocus>
+                        </div>
+                        <div class="form-group col-sm-1" style="padding: 3px;">
+                            <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco" name="preco" placeholder="R$" required>
+                        </div>
+                        <div class="form-group col-sm-1" style="padding: 3px;">
+                            <label for="preco_custo" style="margin: 0px;">Custo<code>*</code></label>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_custo" name="preco_custo" placeholder="R$" required>
+                        </div>
+                        <div class="form-group col-sm-1" style="padding: 3px;">
+                            <label for="preco_promocao" style="margin: 0px;">Promoção<code>*</code></label>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_promocao" name="preco_promocao" placeholder="R$" required>
+                        </div>';
+                session()->flash("codigo_barras", $codigo_barras);
+                session()->flash("divs", $divs);
+                session()->flash("produtos_id", $produto[0]->id);
+                return redirect()->back();
+            } else {
+                $error = "Produto não cadastrado, cadastre antes de criar lotes";
+                session()->flash("error", $error);
+                return redirect()->back();
+            }
+        } else {
+            $dados = $request->except("_token");
+            $dados['preco'] = str_replace(',', '.', $dados['preco']);
+            $dados['preco_custo'] = str_replace(',', '.', $dados['preco_custo']);
+            $dados['preco_promocao'] = str_replace(',', '.', $dados['preco_promocao']);
+            Lote::create($dados);
+            $success = "Lote cadastrado com sucesso";
+            session()->flash("success", $success);
+            return redirect()->back();
+        }        
+    }
+
 
 }

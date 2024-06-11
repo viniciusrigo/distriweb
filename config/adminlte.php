@@ -308,18 +308,25 @@ return [
         //     'label' => 4,
         //     'label_color' => 'success',
         // ],
+        ['header' => 'Sistema'],
         [
             'text' => 'PDV',
-            'url' => 'vendedor/pdv',
+            'url' => 'admin/pdv',
             'icon' => 'fas fa fa-shopping-cart',
             'can' => 'acesso_pdv'
         ],
-        ['header' => 'Sistema'],
         [
             'text' => 'Comandas',
             'url' => 'admin/comandas',
             'icon' => 'fas fa fa-id-card',
             'can' => 'acesso_comandas'
+        ],
+        ['header' => 'Administração'],
+        [
+            'text' => 'Caixa',
+            'url' => 'admin/caixa',
+            'icon' => 'fas fa-solid fa-cash-register',
+            'can' => 'acesso_caixa'
         ],
         [
             'text' => 'Vendas',
@@ -347,7 +354,7 @@ return [
         ],
         [
             'text' => 'Fornecedores',
-            'url' => 'admin/cadastro/fornecedores',
+            'url' => 'admin/fornecedores',
             'icon' => 'fas fa fa-truck',
             'can' => 'acesso_fornecedores'
         ],

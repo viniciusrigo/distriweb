@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CaixaController;
 use App\Http\Controllers\Admin\ClienteController;
 use App\Http\Controllers\Admin\ComandaController;
 use App\Http\Controllers\Admin\EstoqueController;
@@ -9,7 +10,7 @@ use App\Http\Controllers\Admin\MovimentacoesFinanceiraController;
 use App\Http\Controllers\Admin\UsuariosController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginClienteController;
-use App\Http\Controllers\Vendedor\VendaController;
+use App\Http\Controllers\Admin\VendaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -65,12 +66,27 @@ Route::prefix('/admin')->group(function () {
 
     Route::get('/clientes', [ClienteController::class, 'index'])->name('admin.clientes.index')->middleware('can:acesso_clientes');
 
+    Route::get('/pdv', [VendaController::class, 'index'])->name('admin.pdv.index')->middleware('can:acesso_pdv');
+    Route::get('/pdv/create', [VendaController::class, 'create'])->name('vendedor.pdv.create')->middleware('can:acesso_pdv');
+    Route::get('/pdv/venda/{id}', [VendaController::class, 'venda'])->name('vendedor.pdv.venda')->middleware('can:acesso_pdv');
+    Route::post('/pdv/venda/add-produto', [VendaController::class, 'add_produto'])->name('vendedor.pdv.add-produto')->middleware('can:acesso_pdv');
+    Route::post('/pdv/venda/remove-produto', [VendaController::class, 'remove_produto'])->name('vendedor.pdv.remove-produto')->middleware('can:acesso_pdv');
+    Route::post('/pdv/venda/concluir-venda', [VendaController::class, 'concluir_venda'])->name('vendedor.pdv.concluir-venda')->middleware('can:acesso_pdv');
+
     Route::get('/comandas', [ComandaController::class, 'index'])->name('admin.comandas.index')->middleware('can:acesso_comandas');
     Route::post('/comandas/store', [ComandaController::class, 'store'])->name('admin.comandas.store')->middleware('can:acesso_comandas');
     Route::post('/comandas/closed', [ComandaController::class, 'closed'])->name('admin.comandas.closed')->middleware('can:acesso_comandas');
     Route::get('/comandas/delete/{id}', [ComandaController::class, 'destroy'])->name('admin.comandas.destroy')->middleware('can:acesso_comandas');
     Route::post('/comandas/add-produto', [ComandaController::class, 'add_produto'])->name('admin.comandas.add-produto')->middleware('can:acesso_comandas');
     Route::post('/comandas/remove-produto', [ComandaController::class, 'remove_produto'])->name('admin.comandas.remove-produto')->middleware('can:acesso_comandas');
+
+    Route::get('/vendas', [VendaController::class, 'index_vendas'])->name('admin.vendas.index')->middleware('can:acesso_vendas');
+    Route::post('/vendas/consulta-produtos', [VendaController::class, 'consulta_produtos_ajax'])->name('admin.vendas.consulta-produtos')->middleware('can:acesso_vendas');
+    Route::get('/vendas/detalhe/{id}', [VendaController::class, 'detalhe_venda'])->name('admin.vendas.detalhe.index')->middleware('can:acesso_vendas');
+
+    Route::get('/caixa', [CaixaController::class, 'index'])->name('admin.caixa.index')->middleware('can:acesso_caixa');
+    Route::post('/caixa/abrir', [CaixaController::class, 'open'])->name('admin.caixa.open')->middleware('can:acesso_caixa');
+    Route::post('/caixa/fechar', [CaixaController::class, 'close'])->name('admin.caixa.close')->middleware('can:acesso_caixa');
 
     Route::delete('/estoque/produtos/delete/{id}', [EstoqueController::class, 'destroy'])->name('admin.estoque.produtos.destroy')->middleware('can:acesso_estoque');
     Route::put('/estoque/produtos/', [EstoqueController::class, 'update'])->name('admin.estoque.produtos.update')->middleware('can:acesso_estoque');
@@ -81,7 +97,8 @@ Route::prefix('/admin')->group(function () {
     Route::post('/estoque/produtos/atualizar-promocao/', [EstoqueController::class, 'atualizar_promocao'])->name('admin.estoque.produtos.atualizar-promocao')->middleware('can:acesso_estoque');
     Route::post('/estoque/produtos/atualizar-ativo/', [EstoqueController::class, 'atualizar_ativo'])->name('admin.estoque.produtos.atualizar-ativo')->middleware('can:acesso_estoque');
 
-    Route::post('/estoque/novo-lote', [EstoqueController::class, 'novo_lote'])->name('admin.estoque.novo-lote');
+    Route::get('/estoque/lotes', [EstoqueController::class, 'index_lote'])->name('admin.estoque.lote.index')->middleware('can:acesso_estoque');
+    Route::post('/estoque/lotes/novo', [EstoqueController::class, 'novo_lote'])->name('admin.estoque.lote.novo')->middleware('can:acesso_estoque');
 
     Route::get('/financeiro/contas-a-pagar', [PagarContaController::class, 'index'])->name('admin.financeiro.contas-a-pagar.index')->middleware('can:acesso_financeiro');
     Route::post('/financeiro/contas-a-pagar', [PagarContaController::class, 'store'])->name('admin.financeiro.contas-a-pagar.store')->middleware('can:acesso_financeiro');
@@ -89,15 +106,4 @@ Route::prefix('/admin')->group(function () {
     Route::get('/financeiro/contas-a-pagar/pagar/{id}', [PagarContaController::class, 'pagar'])->name('admin.financeiro.contas-a-pagar.pagar')->middleware('can:acesso_financeiro');
     Route::get('/financeiro/movimentacoes', [MovimentacoesFinanceiraController::class, 'index'])->name('admin.financeiro.movimentacoes.index')->middleware('can:acesso_financeiro');
 })->middleware('check.client');
-
-
-
-Route::prefix('/vendedor/pdv')->group(function () {
-    Route::get('/', [VendaController::class, 'index'])->name('vendedor.PDV.index')->middleware('can:acesso_pdv');
-    Route::get('create', [VendaController::class, 'create'])->name('vendedor.PDV.create')->middleware('can:acesso_pdv');
-    Route::get('venda/{id}', [VendaController::class, 'venda'])->name('vendedor.PDV.venda')->middleware('can:acesso_pdv');
-    Route::post('venda/add-produto', [VendaController::class, 'add_produto'])->name('vendedor.PDV.add-produto')->middleware('can:acesso_pdv');
-    Route::post('venda/remove-produto', [VendaController::class, 'remove_produto'])->name('vendedor.PDV.remove-produto')->middleware('can:acesso_pdv');
-    Route::post('venda/concluir-venda', [VendaController::class, 'concluir_venda'])->name('vendedor.PDV.concluir-venda')->middleware('can:acesso_pdv');
-});
 

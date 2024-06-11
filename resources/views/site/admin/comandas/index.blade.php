@@ -206,10 +206,21 @@
                                         <tr class="tb-tr-bd">
                                             <td style="text-align:left"><strong>{{ $fechada->id }}</strong></td>
                                             <td style="text-align:left"><strong>{{ $fechada->nome }}</strong></td>
-                                            <td style="text-align:left"><strong>R${{ $fechada->total }}</strong></td>
+                                            <td style="text-align:left">
+                                                <strong>R${{ $fechada->total }}
+                                                    @php
+                                                        if($fechada->taxa > 0){
+                                                            echo "<span class='badge badge-danger'>";
+                                                            echo "<i class='fa-solid fa-arrow-trend-down'></i>  R$";
+                                                            echo round(($fechada->total * 100) / (100 - $fechada->taxa) - $fechada->total, 2);
+                                                            echo "</span>";
+                                                        }
+                                                    @endphp
+                                                </strong>
+                                            </td>
                                             @php
                                                 if ($fechada->forma_pagamentos_id == 1) {
-                                                echo "<td><span style='background-color: #514ab3; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-brands fa-pix'></i>  <strong>PIX</strong></span></td>";
+                                                    echo "<td><span style='background-color: #514ab3; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-brands fa-pix'></i>  <strong>PIX</strong></span></td>";
                                                 } else if ($fechada->forma_pagamentos_id == 2) {
                                                     echo "<td><span style='background-color: #949238; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-solid fa-credit-card'></i>  Crédito</span></td>";
                                                 } else if ($fechada->forma_pagamentos_id == 3) {
@@ -252,7 +263,7 @@
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
                 },
                 pagingType: 'first_last_numbers',
-                order: [[6, 'asc']],
+                order: [[0, 'desc']],
             });
 
             $('.alert').addClass("show");

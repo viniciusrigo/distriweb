@@ -11,41 +11,23 @@
 @stop
 
 @section('content')
-    @if (session('atualizado-success'))  
-        <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-check"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('atualizado-success') }}</span>
-        </div>
+    @if (session('error')) 
+    <div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
+        <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
+        <span style="color: #ce0000;" class="msg">{{ session('error') }}</span>
+    </div>
     @endif
-    @if (session('ativo-success'))
-        <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-check"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('ativo-success') }}</span>
-        </div>
-    @endif
-    @if (session('promocao-success'))
-        <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-check"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('promocao-success') }}</span>
-        </div>
+    @if (session('alerta'))
+    <div style="background: #ffdb9b; border-left: 8px solid #ffa502;" class="alert hide">
+        <span style="color: #ce8500;" class="fas fa-exclamation-circle"></span>
+        <span style="color: #ce8500;" class="msg">{{ session('alerta') }}</span>
+    </div>
     @endif
     @if (session('success'))
-        <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-check"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-        </div>
-    @endif
-    @if (session('erro_venda'))
-        <div style="background: #d47a7a; border-left: 8px solid #771c1c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-exclamation"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('erro_venda') }}</span>
-        </div>
-    @endif
-    @if (session('erro_produto'))
-        <div style="background: #d47a7a; border-left: 8px solid #771c1c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-exclamation"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('erro_produto') }}</span>
-        </div>
+    <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
+        <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
+        <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
+    </div>
     @endif
     <div class="row">
         <div class="col-md-3 col-sm-6 col-12">
@@ -89,9 +71,9 @@
                                 <tr>
                                     <th rowspan="1" colspan="1">Produto</th>
                                     <th rowspan="1" colspan="1">Preço</th>
-                                    <th rowspan="1" colspan="1">Lucro</th>
-                                    <th rowspan="1" colspan="1">Custo</th>
-                                    <th rowspan="1" colspan="1">QTD</th>
+                                    <th style="text-align:left" rowspan="1" colspan="1">Lucro</th>
+                                    <th style="text-align:left" rowspan="1" colspan="1">Custo</th>
+                                    <th style="text-align:left" rowspan="1" colspan="1">QTD</th>
                                     <th rowspan="1" colspan="1">Últ Compra</th>
                                     <th rowspan="1" colspan="1">Promoção</th>
                                     <th rowspan="1" colspan="1">Ativo</th>
@@ -107,10 +89,10 @@
                                             @else
                                                 <td class="dtr-control sorting_1" tabindex="0"><s>{{ $produto->nome }}</s></td>
                                             @endif                         
-                                            <td>R${{ $produto->promocao == "s" ? $produto->preco_promocao : $produto->preco }} <span class="badge badge-success">{{ number_format((($produto->preco - $produto->preco_custo) / $produto->preco) * 100, 2, '.', ',') }}%</span> </td>
-                                            <td>R${{ $produto->lucro }}</td>
-                                            <td>R${{ $produto->preco_custo }}</td>
-                                            <td>{{ $produto->quantidade }}</td>
+                                            <td>R${{ $produto->promocao == "s" ? $produto->preco_promocao : $produto->preco }} <span class="badge badge-success">{{ $produto->promocao == "s" ? number_format((($produto->preco_promocao - $produto->preco_custo) / $produto->preco_promocao) * 100, 2, '.', ',') : number_format((($produto->preco - $produto->preco_custo) / $produto->preco) * 100, 2, '.', ',') }}%</span> </td>
+                                            <td  style="text-align:left">R${{ $produto->lucro }}</td>
+                                            <td  style="text-align:left">R${{ $produto->preco_custo }}</td>
+                                            <td  style="text-align:left">{{ $produto->quantidade }}</td>
                                             <td>
                                                 @php 
                                                     if($produto->ult_compra == null) {

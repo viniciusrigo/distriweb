@@ -81,7 +81,6 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
                     <div class="card-header">
                         {{-- <h3 style="color: #007BFF;" class="card-title"><strong>Contas à Pagar</strong></h3>
                         <h3 class="card-title ml-3">
@@ -89,114 +88,112 @@
                         </h3> --}}
                         <span style="cursor:default;" class="badge badge-danger text-danger">.</span><strong style="cursor:default;"> Vencida  </strong><span style="cursor:default;" class="badge badge-warning text-warning">.</span><strong style="cursor:default;"> Vence Hoje  </strong><span style="cursor:default;" class="badge badge-primary text-primary">.</span><strong style="cursor:default;"> Vence em 3 dias  </strong>
                     </div> 
-                    <div style="cursor:default;" class="card-body table-responsive p-0">
-                        <table id="tabela_contas" class="hover compact">
-                            <thead>
+
+                    <table id="tabela_contas" class="table hover compact">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center">ID</th>
+                                <th>Conta</th>
+                                <th>Fornecedor</th>
+                                <th>Vencimento</th>
+                                <th style="text-align:left">Valor</th>
+                                <th>Status</th>
+                                <th>#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($contas as $conta)
                                 <tr>
-                                    <th style="text-align:center">ID</th>
-                                    <th>Conta</th>
-                                    <th>Fornecedor</th>
-                                    <th>Vencimento</th>
-                                    <th style="text-align:left">Valor</th>
-                                    <th>Status</th>
-                                    <th>#</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($contas as $conta)
-                                    <tr>
-                                        <td style="text-align:center">{{ $conta->id }}</td>
-                                        <td>{{ $conta->tipo_conta }}</td>
-                                        <td>{{ $conta->nome }}</td>
-                                        @php
-                                            $hoje = date('Y-m-d');
-                                            $vencimentoSegundos = strtotime($conta->vencimento);
-                                            $hojeSegundos = time();
-                                            $diferenca = ($vencimentoSegundos - $hojeSegundos);
-                                            if($conta->status == 'a') {
-                                                if($diferenca < 0){
-                                                    echo '<td><span class="badge badge-danger text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
-                                                }elseif ($diferenca > 0 && $diferenca < 86400){
-                                                    echo '<td><span class="badge badge-warning text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
-                                                }elseif ($diferenca > 86400 && $diferenca < 259200) {
-                                                    echo '<td><span class="badge badge-primary text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
-                                                }else {
-                                                    echo '<td><span class="badge badge-white text-dark">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
-                                                }
+                                    <td style="text-align:center">{{ $conta->id }}</td>
+                                    <td>{{ $conta->tipo_conta }}</td>
+                                    <td>{{ $conta->nome }}</td>
+                                    @php
+                                        $hoje = date('Y-m-d');
+                                        $vencimentoSegundos = strtotime($conta->vencimento);
+                                        $hojeSegundos = time();
+                                        $diferenca = ($vencimentoSegundos - $hojeSegundos);
+                                        if($conta->status == 'a') {
+                                            if($diferenca < 0){
+                                                echo '<td><span class="badge badge-danger text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
+                                            }elseif ($diferenca > 0 && $diferenca < 86400){
+                                                echo '<td><span class="badge badge-warning text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
+                                            }elseif ($diferenca > 86400 && $diferenca < 259200) {
+                                                echo '<td><span class="badge badge-primary text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
                                             }else {
-                                                echo '<td><span class="badge badge-success text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
+                                                echo '<td><span class="badge badge-white text-dark">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
                                             }
-                                        @endphp     
-                                        <td style="text-align:left">R${{ $conta->valor }}</td>
-                                        @if ($conta->status == 'a')
-                                            <td><span class="badge badge-warning text-white">{{ $conta->status == 'a' ? 'Aguardando':'' }}</span></td>
-                                            <td>
-                                                <form style="display: inline;" action="contas-a-pagar/pagar/{{ $conta->id }}" method="GET">
-                                                    @csrf
-                                                    <button style="border: none;" class="badge badge-success">Pagar</button>
-                                                </form>
-                                                <form style="display: inline;" action="contas-a-pagar/delete/{{ $conta->id }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button style="border: none;" class="badge badge-danger">Excluir</button>
-                                                </form>
-                                            </td>
-                                        @endif                                        
-                                    </tr> 
-                                @endforeach                               
-                            </tbody>
-                            <tfoot>
+                                        }else {
+                                            echo '<td><span class="badge badge-success text-white">'.date("d/m/Y", strtotime($conta->vencimento)).'</span></td>';
+                                        }
+                                    @endphp     
+                                    <td style="text-align:left">R${{ $conta->valor }}</td>
+                                    @if ($conta->status == 'a')
+                                        <td><span class="badge badge-warning text-white">{{ $conta->status == 'a' ? 'Aguardando':'' }}</span></td>
+                                        <td>
+                                            <form style="display: inline;" action="contas-a-pagar/pagar/{{ $conta->id }}" method="GET">
+                                                @csrf
+                                                <button style="border: none;" class="badge badge-success">Pagar</button>
+                                            </form>
+                                            <form style="display: inline;" action="contas-a-pagar/delete/{{ $conta->id }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button style="border: none;" class="badge badge-danger">Excluir</button>
+                                            </form>
+                                        </td>
+                                    @endif                                        
+                                </tr> 
+                            @endforeach                               
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <table id="tabela_contas_pagas" class="table hover compact">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center">ID</th>
+                                <th>Conta</th>
+                                <th>Fornecedor</th>
+                                <th>Vencimento</th>
+                                <th>Data Pagamento</th>
+                                <th style="text-align:left">Valor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($contasPagas as $contaPaga)
                                 <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div style="cursor:default;" class="card-body table-responsive p-0">
-                        <table id="tabela_contas_pagas" class="hover compact">
-                            <thead>
-                                <tr>
-                                    <th style="text-align:center">ID</th>
-                                    <th>Conta</th>
-                                    <th>Fornecedor</th>
-                                    <th>Vencimento</th>
-                                    <th>Data Pagamento</th>
-                                    <th style="text-align:left">Valor</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($contasPagas as $contaPaga)
-                                    <tr>
-                                        <td style="text-align:center">{{ $contaPaga->id }}</td>
-                                        <td>{{ $contaPaga->tipo_conta }}</td>
-                                        <td>{{ $contaPaga->nome }}</td>
-                                        <td>@php echo date("d/m/Y", strtotime($contaPaga->vencimento)) @endphp</td>
-                                        <td>@php echo date("H:i:s d/m/Y", strtotime($contaPaga->data_pagamento)) @endphp</td>
-                                        <td style="text-align:left">R${{ $contaPaga->valor }}</td>
-                                        <td><span class="badge badge-success text-white">{{ $contaPaga->status == 'p' ? 'Pago':'' }}</span></td>           
-                                    </tr> 
-                                @endforeach                               
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>          
+                                    <td style="text-align:center">{{ $contaPaga->id }}</td>
+                                    <td>{{ $contaPaga->tipo_conta }}</td>
+                                    <td>{{ $contaPaga->nome }}</td>
+                                    <td>@php echo date("d/m/Y", strtotime($contaPaga->vencimento)) @endphp</td>
+                                    <td>@php echo date("H:i:s d/m/Y", strtotime($contaPaga->data_pagamento)) @endphp</td>
+                                    <td style="text-align:left">R${{ $contaPaga->valor }}</td>
+                                    <td><span class="badge badge-success text-white">{{ $contaPaga->status == 'p' ? 'Pago':'' }}</span></td>           
+                                </tr> 
+                            @endforeach                               
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>         
                 </div>     
             </div>
         </div>
@@ -212,6 +209,8 @@
                 },
                 pagingType: 'first_last_numbers',
                 order: [[2, 'asc']],
+                scrollCollapse: true,
+                scrollY: '300px',
             });
             new DataTable('#tabela_contas_pagas', {
                 language: {
@@ -220,7 +219,7 @@
                 order: [[3, 'desc']],
                 paging: false,
                 scrollCollapse: true,
-                scrollY: '200px',
+                scrollY: '300px',
             });
 
             $('.alert').addClass("show");

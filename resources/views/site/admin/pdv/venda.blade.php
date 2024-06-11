@@ -39,7 +39,7 @@
         <div class="row justify-content-center">
             <div style="font-size: 25px;" class="col-md-6">
                 <div class="card card-outline card-success col-md-12 h-25">
-                    <form action="{{ route('vendedor.PDV.add-produto') }}" method="POST">
+                    <form action="{{ route('vendedor.pdv.add-produto') }}" method="POST">
                         @csrf
                         <label for="codigo_barras" style="margin: 0px;">Código de Barras</label>
                         <input type="hidden" name="vendas_id" value="{{ Request::segment(4) }}">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
                 <div class="form-group col-md-12" style="padding: 3px;">
-                    <form class="d-flex flex-wrap" action="{{ route('vendedor.PDV.concluir-venda') }}" method="POST">
+                    <form class="d-flex flex-wrap" action="{{ route('vendedor.pdv.concluir-venda') }}" method="POST">
                         @csrf
                         <input type="hidden" name="vendas_id" value="{{ Request::segment(4) }}">
                         <div class="d-inline form-check" style="padding: 3px;">
@@ -120,7 +120,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 ml-auto">
-                    <form action="{{ route('vendedor.PDV.remove-produto') }}" method="POST">
+                    <form action="{{ route('vendedor.pdv.remove-produto') }}" method="POST">
                         @csrf
                         <label for="codigo_barras_remover" style="margin: 0px;">Remover Produto</label>
                         <input type="hidden" name="vendas_id" value="{{ Request::segment(4) }}">

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\ProdutosComanda;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Caixa;
 use App\Models\CarrinhoComanda;
 use App\Models\Comanda;
 use App\Models\ComandaProduto;
 use App\Models\Estoque;
+use App\Models\FormaPagamento;
 use App\Models\MovimentacoesFinanceira;
 use App\Models\Produto;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +29,21 @@ class ComandaController extends Controller
             ->where("status", "a")
             ->get();
 
-         $comandas_fechadas = DB::table("comandas")->where("status", "f")->get();
+         $comandas_fechadas = DB::table("comandas")->where("status", "f")
+            ->join("forma_pagamentos", "comandas.forma_pagamentos_id", "=","forma_pagamentos.id")
+            ->select(
+                "comandas.id",
+                "comandas.nome",
+                "comandas.total",
+                "comandas.lucro",
+                "comandas.forma_pagamentos_id",
+                "forma_pagamentos.taxa",
+                "comandas.dinheiro",
+                "comandas.troco",
+                "comandas.status",
+                "comandas.data_abertura",
+                "comandas.data_fechamento"
+            )->get();
 
         for($i= 0;$i<count($comandas);$i++) {
             $comandaProduto = DB::table('carrinho_comandas')->where("comandas_id", "=", $comandas[$i]->id)
@@ -43,6 +60,14 @@ class ComandaController extends Controller
     }
 
     public function store(Request $request, Comanda $comanda){
+        $caixa_aberto = Caixa::where('status', 'a')->first();
+        if (!isset($caixa_aberto)){
+
+            $alert = "Abra o caixa antes de começar as vendas";
+            session()->flash("alert", $alert);
+
+            return redirect()->route("admin.caixa.index");
+        }
 
         $dados = $request->all();
         $dados['data_abertura'] = now()->format('Y-m-d H:i:s');
@@ -124,8 +149,23 @@ class ComandaController extends Controller
 
     public function closed(Request $request, Comanda $comanda) {
         try {
-
             $comanda = Comanda::find($request->id);
+            $taxa_pagamento = FormaPagamento::where("id", $request->pagamento)->first();
+            $total_taxado = $comanda->total - ($comanda->total / 100 * $taxa_pagamento->taxa);
+            $carrinho = CarrinhoComanda::where("comandas_id", $request->id)->get()->toArray();
+
+            if ($request->pagamento == "2" || $request->pagamento == "3") {
+                $comanda["total"] = $total_taxado;
+                $comanda["lucro"] -= round(($comanda["total"] * 100) / (100 - $taxa_pagamento->taxa) - $comanda["total"], 2);
+            }
+
+            $produtos_comanda = new ProdutosComanda();
+            for($i = 0; $i < count($carrinho); $i++){
+                $produtos_comanda->create($carrinho[$i]);
+            }
+
+            CarrinhoComanda::where("comandas_id", $comanda->id)->delete();          
+            
             $comanda["status"] = "f";
             $comanda["data_fechamento"] = now();
             $comanda["forma_pagamentos_id"] = $request->pagamento;

@@ -5,17 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CarrinhoComanda extends Model
+class Caixa extends Model
 {
     use HasFactory;
 
     public $timestamps = false;
 
     protected $fillable = [
-        "comanda_id",
-        "estoques_id",
-        "pnc",
-        "valor",
-        "data_compra"
+        "id",
+        "users_id",
+        "valor_inicial",
+        "valor_final",
+        "valor_retirada",
+        "data_abertura",
+        "data_fechamento",
     ];
 }
