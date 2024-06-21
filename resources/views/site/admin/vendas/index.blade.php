@@ -1,77 +1,89 @@
 @extends('adminlte::page')
 
-@section('title', 'DW - Estoque')
+@section('title', 'DW - Vendas')
 
 @section('content_header')
 
 @stop
 
 @section('css')
+
+    <style>
+
+    </style>
+
     <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
 @stop
 
 @section('content')
-    <div class="container-fluid">
-        <div class="justify-content-center">
-            <table id="tabela_vendas" class="table hover compact" aria-describedby="info">
-                <thead>
-                    <tr>
-                        <th rowspan="1" colspan="1">Cliente</th>
-                        <th rowspan="1" colspan="1">Local</th>
-                        <th style="text-align:left" rowspan="1" colspan="1">Valor</th>
-                        <th rowspan="1" colspan="1">Itens</th>
-                        <th rowspan="1" colspan="1">Pagamento</th>
-                        <th rowspan="1" colspan="1">Data</th>
-                        <th rowspan="1" colspan="1">#</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @isset($vendas)
-                        @foreach ($vendas as $venda)
-                            <tr>                      
-                                <td>{{ $venda->cpf_cliente == null ? "Não informado" : $venda->cpf_cliente }}</td>
-                                @php
-                                    if ($venda->local == "PDV") {
-                                        echo "<td><span style='background-color: #FFC107; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>PDV</strong></span></td>";
-                                    } else{
-                                        echo "<td><span style='background-color: #DC3545; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>Comanda</strong></span></td>";
-                                    }
-                                @endphp
-                                <td style="text-align:left">R${{ $venda->valor }}</td>
-                                <td><span style="cursor: pointer;background-color:#92d8ee;padding: 3px;border-radius: 5px;" class="text-primary" onclick="itens({{ $venda->id }})"><strong>Visualizar</strong></span></td>
-                                @php
-                                    if ($venda->forma_pagamentos_id == 1) {
-                                        echo "<td><span style='background-color: #514ab3; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-brands fa-pix'></i>  <strong>PIX</strong></span></td>";
-                                    } else if ($venda->forma_pagamentos_id == 2) {
-                                        echo "<td><span style='background-color: #949238; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-solid fa-credit-card'></i>  Crédito</span></td>";
-                                    } else if ($venda->forma_pagamentos_id == 3) {
-                                        echo "<td><span style='background-color: #ee9292; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-solid fa-credit-card'></i>  Débito</span></td>";
-                                    } else {
-                                        echo "<td><span style='background-color: #92d8ee; color: #ffffff; padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-solid fa-money-bill-1'></i>  Dinheiro</span></td>";
-                                    }
-                                @endphp
-                                <td>{{ date('H:i:s d/m/Y', strtotime($venda->data_venda)) }}</td>
-                                <td>
-                                    <form style="display: inline;" action="vendas/detalhe/{{ $venda->id }}" method="GET">
-                                        <button style="border: none;" class="badge badge-primary">Detalhes</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endisset
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </tfoot>
-            </table>
+    <div class="d-flex justify-content-center row mb-1">
+        <div class="col-12 mt-2">
+            <div class="card table-responsive p-0">
+                <div class="card-body p-2">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table id="tabela_vendas" class="table hover compact">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:left">#</th>
+                                            <th style="text-align:left">Cliente</th>
+                                            <th style="text-align:left">Local</th>
+                                            <th style="text-align:left">Valor</th>
+                                            <th>Itens</th>
+                                            <th>Pagamento</th>
+                                            <th>Data</th>
+                                            <th>#</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @isset($vendas)
+                                            @foreach ($vendas as $venda)
+                                                <tr class="tb-tr-bd"> 
+                                                    <td style="text-align:left">{{ $venda->id }}</td>                     
+                                                    <td style="text-align:left">{{ $venda->cpf_cliente == null ? "Não informado" : $venda->cpf_cliente }}</td>
+                                                    <td style="text-align:left"><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>{{ $venda->local }}</strong></span></td>
+                                                    <td style="text-align:left">
+                                                        R${{ $venda->valor }}
+                                                        @php
+                                                            if($venda->taxa > 0){
+                                                                echo "<span class='badge badge-danger'>";
+                                                                echo "<i class='fa-solid fa-arrow-trend-down'></i>  R$";
+                                                                echo round(($venda->valor * 100) / (100 - $venda->taxa) - $venda->valor, 2);
+                                                                echo "</span>";
+                                                            }
+                                                        @endphp
+                                                    </td>
+                                                    <td><span style="cursor: pointer;background-color:#92d8ee;padding: 3px;border-radius: 5px;" class="text-primary" onclick="itens({{ $venda->id }})"><strong>Visualizar</strong></span></td>
+                                                    <td><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>{{ $venda->pagamento_nome }}</strong></span></td>
+                                                    <td>{{ date('H:i:s d/m/Y', strtotime($venda->data_venda)) }}</td>
+                                                    <td>
+                                                        <form style="display: inline;" action="vendas/detalhe/{{ $venda->id }}" method="GET">
+                                                            <button style="border: none;" class="badge badge-primary">Detalhes</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endisset
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @stop
@@ -124,6 +136,7 @@
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
                 },
                 pagingType: 'first_last_numbers',
+                order: [[0, 'desc']],
             });
 
             $('.alert').addClass("show");

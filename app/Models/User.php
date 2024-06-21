@@ -27,7 +27,7 @@ class User extends Authenticatable
         'pontos',
         'celular',
         'cep',
-        'zona',
+        'zona_id',
         'logradouro',
         'complemento',
         'bairro',

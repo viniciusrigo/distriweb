@@ -14,10 +14,11 @@ class Venda extends Model
     protected $fillable = [
         "id",
         "cpf_cliente",
-        "local",
+        "local_id",
         "valor",
         "pontos",
         "lucro",
+        "taxa",
         "comandas_id",
         "estado",
         "forma_pagamentos_id",

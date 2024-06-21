@@ -24,7 +24,7 @@
         <div style="margin-top: 40vh;">
             <form class="row" action="{{ route('vendedor.pdv.create') }}" method="GET">
                 <input oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" type="text" class="col-md-6 form-control form-control-border border-width-2" name="cpf_cliente" value="" placeholder="CPF" autofocus>
-                <input type="hidden" name="local" value="PDV">
+                <input type="hidden" name="local_id" value="4">
                 <input type="hidden" name="data_venda" value="@php echo now(); @endphp">
                 <button type="submit" class="ml-auto mr-auto btn btn-success">Nova Venda</button>
             </form>

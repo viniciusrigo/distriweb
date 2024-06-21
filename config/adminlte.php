@@ -329,6 +329,12 @@ return [
             'can' => 'acesso_caixa'
         ],
         [
+            'text' => 'Bancos',
+            'url' => 'admin/bancos',
+            'icon' => 'fas fa-university',
+            'can' => 'acesso_bancos'
+        ],
+        [
             'text' => 'Vendas',
             'url' => 'admin/vendas',
             'icon' => 'fas fa-solid fa-wallet',
@@ -360,13 +366,13 @@ return [
         ],
         [
             'text' => 'Financeiro',
-            'icon' => 'fas fa-university',
+            'icon' => 'fas fa-solid fa-money-bill-transfer',
             'can' => 'acesso_financeiro',
             'submenu' => [
                 [
                     'text' => 'Cotas a Pagar',
                     'url' =>  'admin/financeiro/contas-a-pagar',
-                    'icon' => 'fas fa fa-thumbs-down'
+                    'icon' => 'fas fa-solid fa-arrow-trend-down'
                 ],
                 [
                     'text' => 'Movimentações',
@@ -582,5 +588,5 @@ return [
     |
     */
 
-    'livewire' => false,
+    'livewire' => true,
 ];

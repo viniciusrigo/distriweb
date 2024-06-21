@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('preco', 10, 2)->nullable();
             $table->decimal('preco_custo', 10, 2)->nullable();
             $table->decimal('preco_promocao', 10, 2)->nullable();
+            $table->datetime('validade');
             $table->datetime('data_cadastro');
 
             $table->foreign('produtos_id')->references('id')->on('produtos');

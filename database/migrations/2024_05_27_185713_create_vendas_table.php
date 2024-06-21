@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('vendas', function (Blueprint $table) {
             $table->id();
             $table->string('cpf_cliente', 15)->nullable();
-            $table->string('local', 8)->nullable();
+            $table->unsignedBigInteger('local_id')->nullable();
             $table->decimal('valor',10,2)->nullable();
             $table->decimal('lucro',10,2)->nullable();
+            $table->decimal('taxa',4,2)->nullable();
             $table->integer('pontos')->nullable();
             $table->integer('descontos')->nullable();
             $table->unsignedBigInteger('comandas_id')->nullable();
@@ -30,6 +31,7 @@ return new class extends Migration
             $table->datetime('data_venda');
 
 
+            $table->foreign('local_id')->references('id')->on('local_vendas');
             $table->foreign('comandas_id')->references('id')->on('comandas');
             $table->foreign('forma_pagamentos_id')->references('id')->on('forma_pagamentos');
         });

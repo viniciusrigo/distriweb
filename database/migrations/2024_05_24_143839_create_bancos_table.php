@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('forma_pagamentos', function (Blueprint $table) {
+        Schema::create('bancos', function (Blueprint $table) {
             $table->id();
-            $table->string('nome', 25);
-            $table->decimal('taxa', 4, 2);
+            $table->string('nome', 50)->nullable();
+            $table->string('agencia', 10)->nullable();
+            $table->string('conta', 50)->nullable();
+            $table->decimal('saldo', 11,2)->nullable();
         });
     }
 
@@ -23,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('forma_pagamentos');
+        Schema::dropIfExists('bancos');
     }
 };

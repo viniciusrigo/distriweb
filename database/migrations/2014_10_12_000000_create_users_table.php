@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('pontos')->nullable();
             $table->string('celular', 15)->unique()->nullable();
             $table->string('cep', 11)->nullable();
-            $table->string('zona', 10)->nullable();
+            $table->unsignedBigInteger('zona_id')->nullable();
             $table->string('logradouro', 100)->nullable();
             $table->string('complemento', 100)->nullable();
             $table->string('bairro', 100)->nullable();
@@ -31,6 +31,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+
+            $table->foreign('zona_id')->references('id')->on('zonas');
         });
     }
 

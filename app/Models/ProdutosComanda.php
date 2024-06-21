@@ -9,6 +9,8 @@ class ProdutosComanda extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         "comandas_id",
         "produtos_id",

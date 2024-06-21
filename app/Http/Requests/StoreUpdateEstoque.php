@@ -47,7 +47,8 @@ class StoreUpdateEstoque extends FormRequest
             'promocao' => '',
             'ativo' => '',
             'ult_compra' => '',
-            'data_cadastro' => ''
+            'data_cadastro' => '',
+            'path_image' => ''
         ];
 
         if ($this->method() === 'PUT') {

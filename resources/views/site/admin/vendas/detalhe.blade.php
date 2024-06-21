@@ -24,7 +24,7 @@
                 <div>Data:................................ {{ date('H:i:s d/m/Y', strtotime($venda->data_venda)) }}</div>
             </div>
             <div class="col-md-5 mt-5 bg-white">
-                <table class="table">
+                <table class="table-sm">
                     <tbody>
                     @foreach ($produtos as $produto)
                         <tr>

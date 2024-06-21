@@ -19,6 +19,7 @@ class Lote extends Model
         "preco",
         "preco_custo",
         "preco_promocao",
+        "validade",
         "data_cadastro"
     ];
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('conta_id')->nullable(false);
             $table->unsignedBigInteger('fornecedor_id')->nullable(false);
+            $table->unsignedBigInteger('banco_id')->nullable(false);
             $table->date('vencimento')->nullable(false);
             $table->decimal('valor',8,2)->nullable(false);
             $table->enum('status', ['a','p'])->default('a');
@@ -23,6 +24,7 @@ return new class extends Migration
 
             $table->foreign('conta_id')->references('id')->on('tipo_contas');
             $table->foreign('fornecedor_id')->references('id')->on('fornecedores');
+            $table->foreign('banco_id')->references('id')->on('bancos');
         });
     }
 

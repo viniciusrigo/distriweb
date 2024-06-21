@@ -8,17 +8,27 @@
 
 @section('css')
     <style>
-
+        ::-webkit-scrollbar{
+            width: 7px;
+        }
+        ::-webkit-scrollbar-thumb{
+            border-radius: 30px;
+            background-color: #cccccc;
+        }
+        ::-webkit-scrollbar-thumb:hover{
+            border-radius: 30px;
+            background-color: #a6a6a6;
+        }
     </style> 
     <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
 @stop
 
 @section('content')
     <div class="d-flex justify-content-center row">
-        <div class="col-md-10">
-            <div style="box-shadow: 0px 5px 20px #888888;" class="card table-responsive p-0">        
-                <div class="card-body">
-                    <div id="example1_wrapper" class="dataTables_wrapper dt-bootstrap4">    
+        <div class="col-12 mt-2">
+            <div class="card table-responsive p-0">        
+                <div class="card-body p-2">
+                    <div>
                         <div class="row">
                             <div class="col-sm-12">
                                 <table id="tabela_clientes" class="table compact" aria-describedby="info">
@@ -35,7 +45,7 @@
                                     <tbody>
                                         @isset($clientes)
                                             @foreach ($clientes as $cliente)
-                                                <tr>                      
+                                                <tr class="tb-tr-bd">                      
                                                     <td>{{ $cliente['name'] }}</td>
                                                     <td>{{ $cliente['celular'] }}</td>
                                                     <td style="text-align:left">{{ $cliente['pontos'] }}</td>
@@ -58,8 +68,8 @@
                                     </tfoot>
                                 </table>
                             </div>
-                        </div>      
-                    </div>
+                        </div>  
+                    <div>    
                 </div>
             </div>
         </div>

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->decimal('total', 8, 2)->nullable();
             $table->decimal('lucro', 8, 2)->nullable();
             $table->unsignedBigInteger('forma_pagamentos_id')->nullable();
-            $table->decimal('dinheiro', 4, 2)->nullable();
-            $table->decimal('troco', 4, 2)->nullable();
+            $table->decimal('taxa', 4, 2)->nullable();
+            $table->decimal('dinheiro', 8, 2)->nullable();
+            $table->decimal('troco', 8, 2)->nullable();
             $table->enum('status', ['a','f'])->default('a');
             $table->datetime('data_abertura')->nullable();
             $table->datetime('data_fechamento')->nullable();

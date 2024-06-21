@@ -55,7 +55,11 @@
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="categoria_id" style="margin: 0px;">Categoria<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="categoria_id" name="categoria_id" required>
+                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="categoria_id" name="categoria_id" required>
+                        @foreach ($categorias as $categoria)
+                            <option value="{{ $categoria->id }}">{{ $categoria->nome }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
                     <label for="pontos" style="margin: 0px;">Pontos</label>
@@ -106,9 +110,13 @@
                     <label for="ult_compra" style="margin: 0px;">Última Compras</label>
                     <input style="margin: 0px;" class="form-control form-control-border border-width-2" id="ult_compra" name="ult_compra" value="null" disabled>
                 </div>
-                <div class="form-group col-md-3" style="padding: 3px;">
+                <div class="form-group col-md-2" style="padding: 3px;">
+                    <label for="validade" style="margin: 0px;">Validade<code>*</code></label>
+                    <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="validade" name="validade" required>
+                </div>
+                <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Data Cadastro<code>*</code></label>
-                    <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="promocao" style="margin: 0px;">Promoção</label>
@@ -117,9 +125,9 @@
                         <option value="s">Sim</option>
                     </select>
                 </div>
-                <div class="form-group col-md-2" style="padding: 3px;">
+                <div class="form-group col-md-1" style="padding: 3px;">
                     <label for="ativo" style="margin: 0px;">Ativo<code>*</code></label>
-                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="ativo" name="ativo">
+                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="ativo" name="ativo" required>
                         <option value="s">Sim</option>
                         <option value="n">Não</option>
                     </select>

@@ -12,7 +12,9 @@ class FormaPagamento extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        "id",
         "nome",
-        "taxa"
+        "taxa",
+        "banco_id"
     ];
 }

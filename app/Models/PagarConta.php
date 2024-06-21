@@ -15,6 +15,7 @@ class PagarConta extends Model
         "id",
         "conta_id",
         "fornecedor_id",
+        "banco_id",
         "vencimento",
         "valor",
         "status",

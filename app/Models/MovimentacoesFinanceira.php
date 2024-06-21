@@ -13,7 +13,7 @@ class MovimentacoesFinanceira extends Model
 
     protected $fillable = [
         "id",
-        "ponto_partida",
+        "local_id",
         "cliente_fornecedor",
         "valor",
         "lucro",

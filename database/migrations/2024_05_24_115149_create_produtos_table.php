@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 40)->nullable(false);
             $table->integer('quantidade')->nullable(false)->default(0);
-            $table->unsignedBigInteger('categoria_id')->nullable(false);
+            $table->unsignedBigInteger('categoria_produtos_id')->nullable(false);
+            $table->unsignedBigInteger('subcategoria_produtos_id')->nullable();
             $table->string('sku')->nullable()->default(null);
             $table->integer('pontos')->nullable()->default(null);
             $table->decimal('preco', 8, 2)->nullable(false)->default(0);
@@ -36,10 +37,12 @@ return new class extends Migration
             $table->decimal('perc_ipi')->nullable();
             $table->enum('promocao', ['n', 's'])->nullable()->default('n');
             $table->enum('ativo', ['n', 's'])->nullable(false)->default('s');
+            $table->date('validade')->nullable();
             $table->date('ult_compra')->nullable();
             $table->date('data_cadastro')->default(now());
 
-            $table->foreign('categoria_id')->references('id')->on('categoria_produtos');
+            $table->foreign('categoria_produtos_id')->references('id')->on('categoria_produtos');
+            $table->foreign('subcategoria_produtos_id')->references('id')->on('subcategoria_produtos');
         });
     }
 

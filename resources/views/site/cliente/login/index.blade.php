@@ -21,35 +21,14 @@
                 font-family: 'Poppins', sans-serif;
                 background: #ececec;
             }
-            /*------------ Login container ------------*/
-            .box-area{
-                width: 930px;
-            }
-            /*------------ Right box ------------*/
-            .right-box{
-                padding: 40px 30px 40px 40px;
-            }
-            /*------------ Custom Placeholder ------------*/
-            ::placeholder{
-                font-size: 16px;
-            }
-            .rounded-4{
-                border-radius: 20px;
-            }
-            .rounded-5{
-                border-radius: 30px;
-            }
-            /*------------ For small screens------------*/
-            @media only screen and (max-width: 768px){
-                .box-area{
-                    margin: 0 10px;
+            @media (max-width: 576px){
+                div #image {
+                    display: none;
                 }
-                .left-box{
-                    height: 100px;
-                    overflow: hidden;
-                }
-                .right-box{
-                    padding: 20px;
+            }
+            @media (min-width: 577px){
+                div #image {
+                    display: flex;
                 }
             }
         </style>
@@ -57,9 +36,9 @@
     </head>
 
     <body class="">
-        <div class="container d-flex justify-content-center align-items-center min-vh-100">
-           <div class="row border rounded-5 p-3 bg-white shadow box-area">
-                <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box" style="background: #103cbe;">
+        <div class="conteiner d-flex justify-content-center align-items-center vh-100">
+           <div class="row border d-flex rounded-5 p-3 bg-white m-3">
+                <div id="image" class="col-md-6 rounded-4 justify-content-center align-items-center flex-column left-box" style="background: #103cbe;">
                     <div class="featured-image mb-3">
                         <img src="{{ asset('logincliente.png') }}" class="img-fluid" style="width: 250px;">
                     </div>

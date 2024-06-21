@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banco;
 use App\Models\MovimentacoesFinanceira;
 use App\Models\PagarConta;
+use App\Models\TipoConta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +23,8 @@ class PagarContaController extends Controller
                                             ->where("pagar_contas.status", "=", "a")
                                             ->join("tipo_contas","pagar_contas.conta_id","=","tipo_contas.id")
                                             ->join("fornecedores","pagar_contas.fornecedor_id","=","fornecedores.id")
-                                            ->select('pagar_contas.id', 'tipo_contas.tipo_conta','fornecedores.nome','pagar_contas.vencimento','pagar_contas.valor','pagar_contas.status')
+                                            ->join("bancos","pagar_contas.banco_id","=","bancos.id")
+                                            ->select('pagar_contas.id', 'bancos.nome as banco_nome', 'pagar_contas.banco_id', 'tipo_contas.tipo_conta','fornecedores.nome','pagar_contas.vencimento','pagar_contas.valor','pagar_contas.status')
                                             ->orderByRaw('pagar_contas.vencimento asc')
                                             ->take(100)->get();
 
@@ -29,7 +32,8 @@ class PagarContaController extends Controller
                                             ->where("pagar_contas.status", "=", "p")
                                             ->join("tipo_contas","pagar_contas.conta_id","=","tipo_contas.id")
                                             ->join("fornecedores","pagar_contas.fornecedor_id","=","fornecedores.id")
-                                            ->select('pagar_contas.id', 'tipo_contas.tipo_conta','fornecedores.nome','pagar_contas.vencimento', 'pagar_contas.data_pagamento','pagar_contas.valor','pagar_contas.status')
+                                            ->join("bancos","pagar_contas.banco_id","=","bancos.id")
+                                            ->select('pagar_contas.id', 'bancos.nome as banco_nome', 'pagar_contas.banco_id', 'tipo_contas.tipo_conta','fornecedores.nome','pagar_contas.vencimento', 'pagar_contas.data_pagamento','pagar_contas.valor','pagar_contas.status')
                                             //->orderByRaw('day(pagar_contas.vencimento) desc')
                                             ->orderByRaw('pagar_contas.vencimento desc')
                                             ->take(100)->get();
@@ -37,7 +41,10 @@ class PagarContaController extends Controller
         //     $contas[$i]->vencimento = date('d/m/Y', strtotime($contas[$i]->vencimento));
         // }
 
-        return view("site/admin/financeiro/contas-a-pagar/index", compact('contas', 'contasPagas'));
+        $bancos = Banco::all('id', 'nome');
+        $tipos_contas = TipoConta::all();
+
+        return view("site/admin/financeiro/contas-a-pagar/index", compact('contas', 'contasPagas', 'bancos', 'tipos_contas'));
     }
 
     public function store(Request $request, PagarConta $pagarConta){
@@ -65,21 +72,32 @@ class PagarContaController extends Controller
     }
 
     public function pagar(string|int $id){
-        DB::table('pagar_contas')->where('id', '=', $id)->update(["data_pagamento" => date("Y-m-d H:i:s", time()), "status" => "p"]);
-
         $conta = PagarConta::find($id);
 
+        $banco = Banco::where("id", $conta->banco_id)->first();
+        if($banco->saldo < $conta->valor) {
+            $error = "Saldo insuficiente em ".$banco->nome;
+            session()->flash("error", $error);
+            return redirect()->back();
+        }
+        $banco->saldo -= $conta->valor;
+        $banco->save();
+
+        $conta->data_pagamento = date("Y-m-d H:i:s", time());
+        $conta->status = "p";
+        $conta->save();
+
         $mov_fin = new MovimentacoesFinanceira;
-        $mov_fin["ponto_partida"] = "Contas a pagar";
-        $mov_fin["cliente_fornecedor"] = $conta['fornecedor_id'];
-        $mov_fin["valor"] = $conta['valor'];
-        $mov_fin["forma_pagamentos_id"] = 5;
+        $mov_fin["local_id"] = 1;
+        $mov_fin["cliente_fornecedor"] = $conta->fornecedor_id;
+        $mov_fin["valor"] = $conta->valor;
+        $mov_fin["forma_pagamentos_id"] = 1;
         $mov_fin["tipo"] = 's';
         $mov_fin['data'] = $conta['data_pagamento'];
         $mov_fin->save();
 
         $success = "Conta paga com sucesso";
-        session()->flash("paga-success", $success);
+        session()->flash("success", $success);
         return redirect()->back();
     }
 

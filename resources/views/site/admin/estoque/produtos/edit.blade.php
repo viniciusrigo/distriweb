@@ -23,7 +23,7 @@
         </div>
         
         <div class="card-body">
-            <form class="form-row" action="{{ route('admin.estoque.produtos.update') }}" method="POST">
+            <form class="form-row" action="{{ route('admin.estoque.produtos.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <input type="hidden" name="id" value="{{ $produto->id }}">
@@ -32,8 +32,8 @@
                     <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" value="{{ $produto->nome }}" required>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
-                    <label for="codigo_barras" style="margin: 0px;">Código de Barras<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" value="{{ $produto->codigo_barras }}" required>
+                    <label for="codigo_barras" style="margin: 0px;">Código de Barras</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" value="{{ $produto->codigo_barras }}">
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
@@ -48,8 +48,8 @@
                     <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_promocao" name="preco_promocao" value="{{ $produto->preco_promocao }}">
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
-                    <label for="quantidade" style="margin: 0px;">QTD<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" value="{{ $produto->quantidade }}" required>
+                    <label for="quantidade" style="margin: 0px;">QTD</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" value="{{ $produto->quantidade }}" disabled>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="sku" style="margin: 0px;">SKU</label>
@@ -104,15 +104,19 @@
                     <label for="perc_ipi" style="margin: 0px;">IPI</label>
                     <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_ipi" name="perc_ipi" value="{{ $produto->perc_ipi }}">
                 </div>
-                <div class="form-group col-md-3" style="padding: 3px;">
+                <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="ult_compra" style="margin: 0px;">Última Compras</label>
                     <input style="margin: 0px;" class="form-control form-control-border border-width-2" id="ult_compra" name="ult_compra" value="{{ $produto->ult_compra }}" disabled>
                 </div>
-                <div class="form-group col-md-3" style="padding: 3px;">
-                    <label for="data_cadastro" style="margin: 0px;">Data Cadastro<code>*</code></label>
-                    <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" value="{{ $produto->data_cadastro }}" disabled>
+                <div class="form-group col-md-2" style="padding: 3px;">
+                    <label for="validade" style="margin: 0px;">Validade</label>
+                    <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="validade" name="validade" value="{{ $produto->validade }}" disabled>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
+                    <label for="data_cadastro" style="margin: 0px;">Data Cadastro</label>
+                    <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" value="{{ $produto->data_cadastro }}" disabled>
+                </div>
+                {{-- <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="promocao" style="margin: 0px;">Promoção</label>
                     <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="promocao" name="promocao">
                         @if ($produto->promocao == "s")
@@ -135,8 +139,9 @@
                             <option value="s">Sim</option>
                         @endif
                     </select>
-                </div>
+                </div> --}}
                 <div class="d-flex form-group col-md-12">
+                    <input type="file" class="form-control-file" name="path_image">
                     <button style="margin-left: auto;" class="btn btn-success" type="submit">Atualizar</button>
                 </div>    
             </form>

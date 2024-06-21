@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUpdateEstoque;
 use App\Models\CarrinhoComanda;
 use App\Models\CarrinhoVenda;
+use App\Models\CategoriaProduto;
 use App\Models\ComandaProduto;
 use App\Models\ItemVenda;
 use App\Models\Lote;
@@ -37,8 +38,8 @@ class EstoqueController extends Controller
 
         } else {
 
-            $qtd_produtos = count(DB::table('produtos')->get('id'));
-
+            $qtd_produtos = DB::table('produtos')->get('quantidade');
+            
             $lista_produtos = DB::table('produtos')->get();
 
             return view("site/admin/estoque/produtos/index", compact('lista_produtos', 'qtd_produtos'));
@@ -48,7 +49,8 @@ class EstoqueController extends Controller
     }
 
     public function create() {
-        return view('site/admin/estoque/produtos/create');
+        $categorias = CategoriaProduto::all();
+        return view('site/admin/estoque/produtos/create', compact('categorias'));
     }
 
     public function store(Request $request, Produto $produtos) {
@@ -86,6 +88,14 @@ class EstoqueController extends Controller
     }
 
     public function update(StoreUpdateEstoque $request, Produto $produto) {
+        $path_image = "";
+        if ($request->hasFile('path_image') && $request->file('path_image')->isValid()){
+            global $path_image;
+            $codigo = $request->input('codigo_barras');
+            $extensao = pathinfo($request->file('path_image')->getClientOriginalName(), PATHINFO_EXTENSION);
+            $file_name = $codigo.'.'.$extensao;
+            $path_image = $request->file('path_image')->storeAs('produtos', $file_name);
+        }
         if(count(CarrinhoVenda::where("produtos_id", $request->id)->get()) > 0){
 
             $error = "Erro ao atualizar, pois existe carrinhos PDV ou Comandas com esse item";
@@ -115,7 +125,7 @@ class EstoqueController extends Controller
         $verifica_lotes = Lote::where('produtos_id', $id)->get();
 
         if(count($verifica_pdv) > 0 || count($verifica_comanda) > 0 || count($verifica_lotes) > 0) {
-            $error = "Erro ao excluir, pois existem vendas ou lotes deste produto";
+            $error = "Erro ao excluir, pois existem Vendas/Comandas/Lotes com/deste produto";
             session()->flash("error", $error);
             return redirect()->back();
         }
@@ -139,6 +149,15 @@ class EstoqueController extends Controller
         $id = $request->input('id_produto');
         $status = $request->input('status_promocao');
         $produto = Produto::where('id', $id)->first();
+
+        $carrinho_venda = CarrinhoVenda::where("produtos_id", $id)->get();
+        $carrinho_comanda = CarrinhoComanda::where("produtos_id", $id)->get();
+        if(count($carrinho_comanda) > 0 || count($carrinho_venda) > 0){
+            $error = "Erro ao atualizar, este produto esta no carrinho de Vendas ou Comandas";
+            session()->flash("error", $error);
+
+            return redirect()->back();
+        }
 
         if ($status === "desativado") {
 
@@ -169,6 +188,15 @@ class EstoqueController extends Controller
         $id = $request->input('id_produto');
         $status = $request->input('status_ativo');
 
+        $carrinho_venda = CarrinhoVenda::where("produtos_id", $id)->get();
+        $carrinho_comanda = CarrinhoComanda::where("produtos_id", $id)->get();
+        if(count($carrinho_comanda) > 0 || count($carrinho_venda) > 0){
+            $error = "Erro ao desativar, este produto esta no carrinho de Vendas ou Comandas";
+            session()->flash("error", $error);
+
+            return redirect()->back();
+        }
+
         if ($status === "desativado") {
             Produto::where('id', $id)->update(['ativo' => "s"]);
             $success = "Produto ativado";
@@ -194,21 +222,25 @@ class EstoqueController extends Controller
             $produto = Produto::where("codigo_barras", $request->input("codigo_barras"))->get();
             if (count($produto) > 0){
                 $codigo_barras = $request->input("codigo_barras");
-                $divs = '<div class="form-group col-sm-1" style="padding: 3px;">
+                $divs = '<div class="m-1" style="width: 55px">
                             <label for="quantidade" style="margin: 0px;">QTD<code>*</code></label>
                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" required autofocus>
                         </div>
-                        <div class="form-group col-sm-1" style="padding: 3px;">
+                        <div class="m-1" style="width: 75px">
                             <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco" name="preco" placeholder="R$" required>
                         </div>
-                        <div class="form-group col-sm-1" style="padding: 3px;">
+                        <div class="m-1" style="width: 75px">
                             <label for="preco_custo" style="margin: 0px;">Custo<code>*</code></label>
                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_custo" name="preco_custo" placeholder="R$" required>
                         </div>
-                        <div class="form-group col-sm-1" style="padding: 3px;">
+                        <div class="m-1" style="width: 95px">
                             <label for="preco_promocao" style="margin: 0px;">Promoção<code>*</code></label>
                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_promocao" name="preco_promocao" placeholder="R$" required>
+                        </div>
+                        <div class="m-1">
+                            <label for="validade" style="margin: 0px;">Validade<code>*</code></label>
+                            <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="validade" name="validade" required>
                         </div>';
                 session()->flash("codigo_barras", $codigo_barras);
                 session()->flash("divs", $divs);

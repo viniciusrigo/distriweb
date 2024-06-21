@@ -36,6 +36,7 @@ class Produto extends Model
         "perc_ipi",
         "promocao",
         "ativo",
+        "validade",
         "ult_compra",
         "data_criacao"
     ];
