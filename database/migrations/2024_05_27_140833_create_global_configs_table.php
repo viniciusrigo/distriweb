@@ -13,7 +13,22 @@ return new class extends Migration
     {
         Schema::create('global_configs', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string("cnpj", 20)->nullable(false);
+            $table->string("razao_social", 100)->nullable(false);
+            $table->string("nome_fantasia", 50)->nullable(false);
+            $table->string("ie", 20)->nullable();
+            $table->string("telefone", 11)->nullable(false);
+            $table->string("codigo_interno", 10)->nullable(false);
+            $table->string("cep", 8)->nullable(false);
+            $table->string("logradouro", 50)->nullable(false);
+            $table->string("numero", 5)->nullable(false);
+            $table->string("complemento", 50)->nullable();
+            $table->string("bairro", 50)->nullable(false);
+            $table->string("localidade", 50)->nullable(false);
+            $table->string("uf", 2)->nullable(false);
+            $table->string("ibge", 11)->nullable(false);
+            $table->string("ddd", 3)->nullable(false);
+            $table->string("siafi", 11)->nullable(false);
         });
     }
 

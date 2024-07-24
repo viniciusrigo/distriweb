@@ -14,10 +14,10 @@ class Comanda extends Model
     protected $fillable = [
         "id",
         "nome",
-        "comanda_produtos_id",
+        "comanda_produto_id",
         "total",
         "lucro",
-        "forma_pagamentos_id",
+        "forma_pagamento_id",
         "status",
         "data_abertura",
         "data_fechamento"

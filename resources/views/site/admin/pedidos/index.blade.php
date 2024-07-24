@@ -7,41 +7,12 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
     <style>
-        ::-webkit-scrollbar{
-            width: 7px;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 30px;
-            background-color: #cccccc;
-        }
-        ::-webkit-scrollbar-thumb:hover{
-            border-radius: 30px;
-            background-color: #a6a6a6;
-        }
+
     </style>
 @stop
 
 @section('content')
-    @if (session('error')) 
-        <div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
-            <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
-            <span style="color: #ce0000;" class="msg">{{ session('error') }}</span>
-         </div>
-    @endif
-    @if (session('alerta'))
-        <div style="background: #ffdb9b; border-left: 8px solid #ffa502;" class="alert hide">
-            <span style="color: #ce8500;" class="fas fa-exclamation-circle"></span>
-            <span style="color: #ce8500;" class="msg">{{ session('alerta') }}</span>
-         </div>
-    @endif
-    @if (session('success'))
-        <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-            <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-         </div>
-    @endif
     <div class="conteiner row d-flex justify-content-center align-items-center vh-100">
         @isset($pedidos)
             
@@ -62,11 +33,11 @@
                                 <div class="card-body p-2"> 
                                     @for ($x = 0; $x < count($pedidos[$i]["produtos"]); $x++)
                                         <div class="row">
-                                            <div class="col-md-2">
-                                                {{ $pedidos[$i]["produtos"][$x]["qtd"] }}x
+                                            <div class="col-md-1">
+                                                1x
                                             </div>
-                                            <div class="col-md-10">
-                                                {{ $pedidos[$i]["produtos"][$x]["nome"] }}
+                                            <div class="col-md-11">
+                                                {{ $pedidos[$i]["produtos"][$x]["nome"] }} {{ $pedidos[$i]["produtos"][$x]["variavel_nome"] }}
                                             </div>
                                         </div> 
                                     @endfor
@@ -95,20 +66,18 @@
                                 <div class="card-footer">
                                     <form id="receber" action="{{ route('admin.pedidos.change-status') }}" method="post">
                                         @csrf
-                                        <input type="hidden" name="pedido" value="{{ $pedidos[$i]["id"] }}">
+                                        <input type="hidden" name="pedido_id" value="{{ $pedidos[$i]["id"] }}">
                                         <input type="hidden" name="status" value="s">
                                         <input type="hidden" name="cpf" value="{{ auth()->user()->cpf }}">
                                     </form>
                                     <form id="rejeitar" action="{{ route('admin.pedidos.rejeitar') }}" method="post">
                                         @csrf
-                                        <input type="hidden" name="pedido" value="{{ $pedidos[$i]["id"] }}">
-                                    </form>
-                                    <form id="imprimir{{ $pedidos[$i]["id"] }}" action="pedidos/imprimir/{{ $pedidos[$i]["id"] }}" method="get" target="_blank">
+                                        <input type="hidden" name="pedido_id" value="{{ $pedidos[$i]["id"] }}">
                                     </form>
                                     <div class="d-flex justify-content-center">
                                         <button form="rejeitar" type="submit" class="btn btn-danger"><i class="fa-solid fa-square-xmark"></i></button>
                                         <button form="receber" type="submit" class="btn btn-success ml-auto mr-auto"><i class="fa-solid fa-square-check"></i> Receber</button>
-                                        <button form="imprimir{{ $pedidos[$i]["id"] }}" type="submit" class="btn btn-info"><i class="fa-solid fa-print"></i></button>
+                                        <button onclick="imprimir({{ $pedidos[$i]['id'] }})" type="button" class="btn btn-info"><i class="fa-solid fa-print"></i></button>
                                     </div>
                                 </div>             
                             </div>
@@ -134,11 +103,11 @@
                             <div class="card-body">           
                                 @for ($x = 0; $x < count($pedidos[$i]["produtos"]); $x++)
                                         <div class="row">
-                                            <div class="col-md-2">
-                                                {{ $pedidos[$i]["produtos"][$x]["qtd"] }}x
+                                            <div class="col-md-1">
+                                                1x
                                             </div>
-                                            <div class="col-md-10">
-                                                {{ $pedidos[$i]["produtos"][$x]["nome"] }}
+                                            <div class="col-md-11">
+                                                {{ $pedidos[$i]["produtos"][$x]["nome"] }} {{ $pedidos[$i]["produtos"][$x]["variavel_nome"] }}
                                             </div>
                                         </div> 
                                     @endfor
@@ -168,7 +137,7 @@
                                     <form action="{{ route('admin.pedidos.change-status') }}" method="post">
                                         @csrf
                                         <div class="d-flex justify-content-center">
-                                            <input type="hidden" name="pedido" value="{{ $pedidos[$i]["id"] }}">
+                                            <input type="hidden" name="pedido_id" value="{{ $pedidos[$i]["id"] }}">
                                             <input type="hidden" name="status" value="ac">
                                             <button type="submit" class="btn btn-success">Entregar Pedido</button>
                                         </div>
@@ -197,11 +166,11 @@
                             <div class="card-body">           
                                 @for ($x = 0; $x < count($pedidos[$i]["produtos"]); $x++)
                                     <div class="row">
-                                        <div class="col-md-2">
-                                            {{ $pedidos[$i]["produtos"][$x]["qtd"] }}x
+                                        <div class="col-md-1">
+                                            1x
                                         </div>
-                                        <div class="col-md-10">
-                                            {{ $pedidos[$i]["produtos"][$x]["nome"] }}
+                                        <div class="col-md-11">
+                                            {{ $pedidos[$i]["produtos"][$x]["nome"] }} {{ $pedidos[$i]["produtos"][$x]["variavel_nome"] }}
                                         </div>
                                     </div> 
                                 @endfor
@@ -231,7 +200,7 @@
                                     <form action="{{ route('admin.pedidos.change-status') }}" method="post">
                                         @csrf
                                         <div class="d-flex justify-content-center">
-                                            <input type="hidden" name="pedido" value="{{ $pedidos[$i]["id"] }}">
+                                            <input type="hidden" name="pedido_id" value="{{ $pedidos[$i]["id"] }}">
                                             <input type="hidden" name="status" value="e">
                                             <button type="submit" class="btn btn-success">Confirmar Entrega</button>
                                         </div>
@@ -260,11 +229,11 @@
                                 <div class="card-body">           
                                     @for ($x = 0; $x < count($pedidos[$i]["produtos"]); $x++)
                                         <div class="row">
-                                            <div class="col-md-2">
-                                                {{ $pedidos[$i]["produtos"][$x]["qtd"] }}x
+                                            <div class="col-md-1">
+                                                1x
                                             </div>
-                                            <div class="col-md-10">
-                                                {{ $pedidos[$i]["produtos"][$x]["nome"] }}
+                                            <div class="col-md-11">
+                                                {{ $pedidos[$i]["produtos"][$x]["nome"] }} {{ $pedidos[$i]["produtos"][$x]["variavel_nome"] }}
                                             </div>
                                         </div> 
                                     @endfor
@@ -304,7 +273,6 @@
     <script>
 
         $(document).ready(function() {
-
             var _token = $('meta[name="_token"]').attr('content');
 
             $.ajaxSetup({
@@ -319,14 +287,24 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500);
 
             
         })
+
+        function imprimir(pedido){
+            
+            let pedido_id = pedido
+            
+            aba = window.open("http://localhost:8989/admin/pedidos/imprimir/"+pedido_id)
+            setTimeout(function(){
+                aba.print()
+            }, 0250);
+            setTimeout(function(){
+                aba.close()
+            }, 2500);
+            
+        }
 
     </script>
 @stop

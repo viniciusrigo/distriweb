@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('fornecedores', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
+            $table->string('cnpj', 15)->nullable();
+            $table->string('nome', 100)->nullable();
+            $table->string('fantasia', 50)->nullable();
+            $table->string('logradouro', 100)->nullable();
+            $table->integer('numero')->nullable();
+            $table->string('municipio', 50)->nullable();
+            $table->string('bairro', 50)->nullable();
+            $table->string('uf', 2)->nullable();
+            $table->string('cep', 10)->nullable();
+            $table->enum('status', ['a', 'd'])->nullable()->default('a');
         });
     }
 

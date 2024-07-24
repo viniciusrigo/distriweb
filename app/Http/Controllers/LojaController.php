@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\CarrinhoCliente;
+use App\Models\CombosProduto;
 use App\Models\FormaPagamento;
+use App\Models\GlobalConfig;
 use App\Models\LocalVenda;
 use App\Models\Lote;
 use App\Models\Pedido;
 use App\Models\Produto;
 use App\Models\ProdutosPedido;
+use App\Models\VariaveisProduto;
 use App\Models\Zona;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LojaController extends Controller
 {
@@ -19,71 +23,94 @@ class LojaController extends Controller
         if(!auth()->user()){
             return redirect()->route("logincliente");
         }
-        $produtos = Produto::where('nome', 'LIKE', "%{$request->busca}%")->orderBy('nome', 'asc')->get();
-        $produtos_desconto = Produto::where('promocao', "s")->orderBy('nome', 'asc')->get();
 
-        return view("site/cliente/loja/index", compact("produtos", "produtos_desconto"));
+        $produtos_desconto = VariaveisProduto::where('promocao', 's')->where('pontos', 0)
+        ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select("produtos.*", "variaveis_produtos.*")
+        ->orderBy('nome', 'asc')->get()->toArray();
+        $produtos_fidelidade = VariaveisProduto::where('promocao', "!=", 's')->where('pontos', ">", 0)
+        ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select("produtos.nome", "variaveis_produtos.*")
+        ->orderBy('nome', 'asc')->get()->toArray();
+        $combos = VariaveisProduto::where('validade', null)
+        ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select("produtos.nome", "variaveis_produtos.*")
+        ->orderBy('nome', 'asc')->get()->toArray();
+        $pedido_aberto = Pedido::where("user_id", auth()->user()->id)->where("status", "!=", "e")->join("zonas", "pedidos.frete", "=", "zonas.entrega")
+        ->select("pedidos.*", "zonas.tempo_entrega")->get();
+
+        for($i = 0; $i < count($pedido_aberto); $i++){
+            $data_pedido = strtotime($pedido_aberto[$i]->data);
+            $entrega_zona = strtotime("1970-01-01 ".$pedido_aberto[$i]->tempo_entrega."UTC");
+            $total = $data_pedido + $entrega_zona;
+
+            $pedido_aberto[$i]->tempo_entrega = date("H:i", $total);
+        }
+        return view("site/cliente/loja/index", compact("produtos_desconto", "produtos_fidelidade", "pedido_aberto", "combos"));
     }
 
     public function produtos_ajax(Request $request){
-        $produtos = Produto::where('nome', 'LIKE', "%{$request->busca}%")->orderBy('nome', 'asc')->get()->toJson();
+        $produtos = VariaveisProduto::
+        join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select(
+            "produtos.nome",
+            "variaveis_produtos.id",
+            "variaveis_produtos.produto_id",
+            "variaveis_produtos.variavel_nome",
+            "variaveis_produtos.codigo_barras",
+            "variaveis_produtos.preco",
+            "variaveis_produtos.preco_promocao",
+            "variaveis_produtos.promocao",
+            "variaveis_produtos.pontos",
+        )
+        ->where('pontos', 0)
+        ->where('promocao', "n")
+        ->where('variavel_ativo', "s")
+        ->where('nome', 'LIKE', "%{$request->busca}%")->orderBy('nome', 'asc')->take(200)->get();
+
         return $produtos;
     }
 
     public function add_carrinho(Request $request){
         $dados = $request->except('_token');
-
-        $produto_estoque = Produto::find($dados['produto']);
-        if($produto_estoque->quantidade < $dados['qtd']) {
-            $error = '<div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
-                        <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
-                        <span style="color: #ce0000;" class="msg">Temos somente '.$produto_estoque->quantidade.' deste produto</span>
-                    </div>';
-
-            return $error;
+        
+        $variavel = VariaveisProduto::find($dados['variavel_produto_id']);
+        if($variavel->fardo_quantidade == null || $variavel->fardo_quantidade == 0){
+            if($variavel->validade != null){
+                if($variavel->variavel_quantidade < $dados['quantidade']) {        
+                    return false;
+                }
+            }
         }
 
-        $produto = CarrinhoCliente::where('users_id', $dados["usuario"])->where('produtos_id', $dados["produto"])->first();
-        if($produto){
-            $produto->qtd += $dados["qtd"];
-            $produto->save();
-
-            $success = '<div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-                        <span style="color: #ffffff;" class="fas fa-solid fa-xmark"></span>
-                        <span style="color: #ffffff;" class="msg">Produto adicionado ao carrinho</span>
-                    </div>';
-
-            return $success;
+        for($x = 0; $x < $dados["quantidade"]; $x++){
+            $carrinho = new CarrinhoCliente();
+            $carrinho["user_id"] = $dados["usuario"];
+            $carrinho["produto_id"] = $variavel->produto_id;
+            $carrinho["variavel_produto_id"] = $dados["variavel_produto_id"];
+            $carrinho["data"] = now();
+            $carrinho->save();
         }
 
-        $carrinho = new CarrinhoCliente();
-        $carrinho["users_id"] = $dados["usuario"];
-        $carrinho["produtos_id"] = $dados["produto"];
-        $carrinho["qtd"] = $dados["qtd"];
-        $carrinho["data"] = now();
-        $carrinho->save();
-
-        $success = '<div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-                        <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
-                        <span style="color: #ffffff;" class="msg">Produto adicionado ao carrinho</span>
-                    </div>';
-
-        return $success;
+        if(isset($dados["carrinho"])){
+            return true;
+        } else {
+            return redirect()->back();
+        }
     }
 
     public function verifica_carrinho(Request $request){
         $usuario = $request->except('_token');
 
-        $qtd_produtos = count(CarrinhoCliente::where('users_id', $usuario)->get());
+        $quantidade_produtos = count(CarrinhoCliente::where('user_id', $usuario)->get());
 
-        return $qtd_produtos;
+        return $quantidade_produtos;
     }
 
     public function remover_carrinho(Request $request){
-        CarrinhoCliente::where('produtos_id', $request->produto_id)->delete();
+        $produto = CarrinhoCliente::where('variavel_produto_id', $request->variavel_produto_id)->first();
 
-        $success = "Produto retirado do carrinho";
-        session()->flash("success", $success);
+        $produto->delete();
 
         return redirect()->back();
     }
@@ -92,129 +119,150 @@ class LojaController extends Controller
         if(!auth()->user()){
             return redirect()->route("logincliente");
         }
-        $produtos = CarrinhoCliente::where('users_id', auth()->user()->id)->join('produtos','carrinho_clientes.produtos_id','=','produtos.id')->select(
-            'produtos.id', 'produtos.nome', 'produtos.preco', 'produtos.pontos','produtos.preco_promocao', 'produtos.promocao', 'carrinho_clientes.qtd', 'produtos.codigo_barras'
+        $produtos = CarrinhoCliente::where('user_id', auth()->user()->id)
+        ->join("produtos","carrinho_clientes.produto_id","=","produtos.id")
+        ->join("variaveis_produtos","carrinho_clientes.variavel_produto_id","=","variaveis_produtos.id")
+        ->select(
+            'produtos.nome',
+            'variaveis_produtos.id',
+            'variaveis_produtos.variavel_nome',
+            'variaveis_produtos.preco',
+            'variaveis_produtos.pontos',
+            'variaveis_produtos.lucro',
+            'variaveis_produtos.preco_promocao',
+            'variaveis_produtos.promocao',
+            'variaveis_produtos.codigo_barras'
         )->get();
-        
+
+        $pontos_cliente = auth()->user()->pontos;
+        $pontos = 0;
+        $lucro = 0;
         for($i = 0; $i < count($produtos); $i++){
-            
             if($produtos[$i]['promocao'] == "s"){
-                $produtos[$i]['total_produto'] = $produtos[$i]->qtd * $produtos[$i]->preco_promocao;
+                $produtos[$i]['total_produto'] = $produtos[$i]->preco_promocao;
+                $lucro += $produtos[$i]->lucro;
             } else {
-                $produtos[$i]['total_produto'] = $produtos[$i]->qtd * $produtos[$i]->preco;
+                if($produtos[$i]['pontos'] == 0){
+                    $produtos[$i]['total_produto'] = $produtos[$i]->preco;
+                    $lucro += $produtos[$i]->lucro;
+                } else {
+                    if($produtos[$i]['pontos'] <= $pontos_cliente){
+                        $produtos[$i]['total_produto'] = $produtos[$i]['preco'] - (($produtos[$i]['preco'] * 15) / 100);
+                        $pontos_cliente -= $produtos[$i]['pontos'];
+                        $lucro += $produtos[$i]->lucro - (($produtos[$i]['preco'] * 15) / 100);
+                        $pontos += $produtos[$i]['pontos'];
+                        //dd($pontos_cliente);
+                    } else {
+                        $produtos[$i]['total_produto'] = $produtos[$i]['preco'];
+                        $lucro += $produtos[$i]->lucro;
+                    }
+                }
             }
         }
-        
+        //dd($pontos);
         $total = "";
-        $pontos = "";
         for($i = 0; $i < count($produtos); $i++){
             global $total;
-            global $pontos;
             $total += $produtos[$i]['total_produto'];
-            if($produtos[$i]['pontos'] > 0){
-                $pontos += $produtos[$i]['promocao'] == "n" ? round($produtos[$i]['preco'], 0, PHP_ROUND_HALF_DOWN) : round($produtos[$i]['preco_promocao'], 0, PHP_ROUND_HALF_DOWN);
-            }
         }
         $zona = Zona::where("id", auth()->user()->zona_id)->first();
         $zonas = Zona::all();
+        $produtos_promocao = VariaveisProduto::join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select(
+            "produtos.nome",
+            "variaveis_produtos.id",
+            "variaveis_produtos.variavel_nome",
+            "variaveis_produtos.preco",
+            "variaveis_produtos.preco_promocao",
+        )->where('variaveis_produtos.promocao', 's')
+        ->where('variaveis_produtos.pontos', 0)
+        ->orderBy("nome", "asc")->get();
 
-        return view('site/cliente/loja/carrinho', compact('produtos', 'total', 'pontos', 'zonas', 'zona'));
+        return view('site/cliente/loja/carrinho', compact('produtos', 'total', 'zonas', 'zona', 'pontos', 'lucro', 'produtos_promocao'));
     }
 
     public function concluir_pedido(Request $request){
         $dados = $request->except('_token');
+        $dados["frete"] = str_replace(',', '.', $dados["frete"]);
+        //dd($dados);
         $local = LocalVenda::where("id", 2)->first();
-        $carrinho = CarrinhoCliente::where("users_id", $dados["users_id"])->get();
-        $dados["lucro"] = 0;
-        $total = "";
-        $pontos = "";
-        $produtos = CarrinhoCliente::where('users_id', $dados["users_id"])->join('produtos', 'carrinho_clientes.produtos_id', '=', 'produtos.id')->select(
-            'produtos.id',
-            'carrinho_clientes.qtd',
-            'produtos.preco',
-            'produtos.preco_promocao',
-            'produtos.promocao',
-            'produtos.pontos',
-            'produtos.lucro',
-            'carrinho_clientes.data',
+        $produtos_carrinho = CarrinhoCliente::where('user_id', $dados["user_id"])
+        ->join('variaveis_produtos', 'carrinho_clientes.variavel_produto_id', '=', 'variaveis_produtos.id')
+        ->select(
+            'variaveis_produtos.id',
+            'variaveis_produtos.produto_id',
+            'variaveis_produtos.preco',
+            'variaveis_produtos.preco_promocao',
+            'variaveis_produtos.promocao',
+            'variaveis_produtos.pontos',
+            'variaveis_produtos.lucro',
             'carrinho_clientes.data'
         )->get();
-
-        if($dados['forma_pagamentos_id'] > 3){
-            if($dados['forma_pagamentos_id'] == 'credito'){
+            
+        if($dados['forma_pagamento_id'] > 3){
+            if($dados['forma_pagamento_id'] == 'credito'){
                 $taxa = FormaPagamento::where('id', $local->credito_id)->first('taxa')->toArray();
-                $dados['forma_pagamentos_id'] = $local->credito_id;
+                $dados['forma_pagamento_id'] = $local->credito_id;
             } else {
                 $taxa = FormaPagamento::where('id', $local->debito_id)->first('taxa')->toArray();
-                $dados['forma_pagamentos_id'] = $local->debito_id;
+                $dados['forma_pagamento_id'] = $local->debito_id;
             }
         } else {
-            $taxa = FormaPagamento::where('id', $dados['forma_pagamentos_id'])->first('taxa')->toArray();
+            $taxa = FormaPagamento::where('id', $dados['forma_pagamento_id'])->first('taxa')->toArray();
         }        
 
-        for($i = 0; $i < count($produtos); $i++){
+        for($i = 0; $i < count($produtos_carrinho); $i++){
 
-            $produto_estoque = Produto::where('id', $produtos[$i]->id)->first();
+            $variavel = VariaveisProduto::where('id', $produtos_carrinho[$i]->id)->first();
 
-            if($produto_estoque->quantidade < $produtos[$i]->qtd){
-                $error = "Temos somente ".$produto_estoque->quantidade."x ".$produto_estoque->nome;
-                session()->flash("error", $error);
-
-                return redirect()->back();
-            } else {
-                $dados["lucro"] += $produto_estoque->lucro * $produtos[$i]->qtd;
-                if ($produto_estoque->quantidade == 0) {
-                    $lote = Lote::where("codigo_barras", $produto_estoque->codigo_barras)->orderBy("data_cadastro", "asc")->first();
-                    if(isset($lote)){
-                        $produto_estoque->quantidade = $lote->quantidade;
-                        $produto_estoque->preco = $lote->preco;
-                        $produto_estoque->preco_custo = $lote->preco_custo;
-                        $produto_estoque->preco_promocao = $lote->preco_promocao;
-                        $produto_estoque->validade = $lote->validade;
-                        $produto_estoque->data_cadastro = $lote->data_cadastro;
-        
-                        $lote->delete();
-                    } else {
-                        $error = "Produto indisponível, verifique o(s) Estoque/Lotes";
+            if($variavel->validade != null){
+                if($variavel->fardo_quantidade == null || $variavel->fardo_quantidade == 0){
+                    if($variavel->variavel_quantidade < $produtos_carrinho[$i]->quantidade){
+                        $error = "Temos somente ".$variavel->quantidade."x";
                         session()->flash("error", $error);
-            
+        
                         return redirect()->back();
+                    } else {
+                        if ($variavel->variavel_quantidade == 0) {
+                            $lote = Lote::where("codigo_barras", $variavel->codigo_barras)->orderBy("data_cadastro", "asc")->first();
+                            if(isset($lote)){
+                                $variavel->variavel_quantidade = $lote->quantidade;
+                                $variavel->preco = $lote->preco;
+                                $variavel->preco_custo = $lote->preco_custo;
+                                $variavel->preco_promocao = $lote->preco_promocao;
+                                $variavel->validade = $lote->validade;
+                                $variavel->data_cadastro = $lote->data_cadastro;
+                
+                                $lote->delete();
+                            } else {
+                                $error = "Temos somente ".$variavel->quantidade."x.";
+                                session()->flash("error", $error);
+                                
+                                return redirect()->back();
+                            }
+                        }
+                        $variavel->variavel_quantidade -= 1;
+                        $variavel->ult_compra = $produtos_carrinho[$i]->data;
+                        $variavel->save();
                     }
+                } else {
+                    $produto = Produto::find($variavel->produto_id);
+                    $fardo_variavel = VariaveisProduto::find($produto->variavel_produto_id);
+                    $fardo_variavel->variavel_quantidade -= $variavel->fardo_quantidade;
+                    $fardo_variavel->save();
                 }
-                $produto_estoque->quantidade -= $produtos[$i]->qtd;
-                $produto_estoque->ult_compra = $produtos[$i]->data;
-                $produto_estoque->save();
-            }
-        }
-
-        if(!isset($dados['zona'])){
-            if (auth()->user()->zona == "Norte"){
-                $dados['frete'] = 5;
-            } else if (auth()->user()->zona == "Sul") {
-                $dados['frete'] = 20;
-            } else if (auth()->user()->zona == "Oeste") {
-                $dados['frete'] = 15;
             } else {
-                $dados['frete'] = 15;
+                $produto = Produto::find($variavel->produto_id);
+                $combo_produtos = CombosProduto::where("produto_id", $produto->id)->get(["variavel_produto_id", "combo_quantidade"]);
+                for($x = 0; $x < count($combo_produtos); $x++){
+                    $variavel = VariaveisProduto::where("id", $combo_produtos[$x]->variavel_produto_id)->first();
+                    $variavel->variavel_quantidade -= $combo_produtos[$x]->combo_quantidade;
+                    $variavel->save();
+                }
             }
+            
         }
         
-        for($i = 0; $i < count($produtos); $i++){
-            global $total;
-            global $pontos;
-            if ($produtos[$i]->promocao == "s"){
-                $total += $produtos[$i]->preco_promocao * $produtos[$i]->qtd;
-                
-            } else {
-                $total += $produtos[$i]->preco * $produtos[$i]->qtd;
-            }
-            if($produtos[$i]['pontos'] > 0){
-                $pontos += $produtos[$i]['promocao'] == "n" ? round($produtos[$i]['preco'], 0, PHP_ROUND_HALF_DOWN) : round($produtos[$i]['preco_promocao'], 0, PHP_ROUND_HALF_DOWN);
-            }
-        }
-
-        $dados["pontos"] = $pontos;
-        $dados["total"] = $total + $dados["frete"];
         $dados["lucro"] += $dados['frete'];
         
         if ($dados["dinheiro"] != null){
@@ -226,24 +274,90 @@ class LojaController extends Controller
         }
 
         $dados["data"] = now();
+        $dados["codigo"] = rand(1000, 9999);
 
-        /* CRIANDO O PEDIDO */
-        $pedido = Pedido::create($dados);
+        DB::transaction(function() use ($dados,$produtos_carrinho){
 
-        /* PASSO OS ITENS DO CARRINHO PARA TABELA PRODUTOSPEDIDOS */
-        for($i = 0; $i < count($carrinho); $i++){
-            $produtos_pedido = new ProdutosPedido();
-            $produtos_pedido['users_id'] = $dados["users_id"];
-            $produtos_pedido['pedidos_id'] = $pedido->id;
-            $produtos_pedido['produtos_id'] = $carrinho[$i]->produtos_id;
-            $produtos_pedido['qtd'] = $carrinho[$i]->qtd;
-            $produtos_pedido['data'] = $carrinho[$i]->data;
-            $produtos_pedido->save();
-        }
+            /* CRIANDO O PEDIDO */
+            $pedido = Pedido::create($dados);
+            
+            /* PASSO OS ITENS DO CARRINHO PARA TABELA PRODUTOSPEDIDOS */
+            for($i = 0; $i < count($produtos_carrinho); $i++){
+                $produtos_pedido = new ProdutosPedido();
+                $produtos_pedido['user_id'] = $dados["user_id"];
+                $produtos_pedido['pedido_id'] = $pedido->id;
+                $produtos_pedido['produto_id'] = $produtos_carrinho[$i]->produto_id;
+                $produtos_pedido['variavel_produto_id'] = $produtos_carrinho[$i]->id;
+                $produtos_pedido['data'] = $produtos_carrinho[$i]->data;
+                $produtos_pedido->save();
+            }
+            
+            /* APAGO TODOS OS ITENS DO CARRINHO */
+            CarrinhoCliente::where("user_id", $dados["user_id"])->delete();
 
-        /* APAGO TODOS OS ITENS DO CARRINHO */
-        CarrinhoCliente::where("users_id", $dados["users_id"])->delete();
+        });
 
-        return redirect()->back();
+        return redirect()->route("loja.index");
     }
+
+    public function cancelar_pedido(Request $request){
+        $dado = $request->except('_token');
+
+        $pedido = Pedido::where("id", $dado["pedido_id"])->first();
+        if($pedido->status != "n"){
+            $error = "Pedido não pode ser cancelado pois a loja já recebeu";
+            session()->flash("error", $error);
+            return redirect()->back();
+        } else {
+            $produtos = ProdutosPedido::where("pedido_id", $dado["pedido_id"])->get();
+            for($i = 0; $i < count($produtos); $i++){            
+                $produtos[$i]->delete();
+            }
+            $pedido->delete();
+
+            $success = "Pedido cancelado com sucesso";
+            session()->flash("success", $success);
+            return redirect()->back();
+        }
+    }
+
+    public function index_confirmar_entrega(){
+        return view("site/admin/pedidos/confirmar-entrega");
+    }
+
+    public function confirmar_entrega(Request $request){
+        $dados_request = $request->all();
+        $pedido = Pedido::where("id", $dados_request["pedido_id"])->first();
+        $empresa = GlobalConfig::where("id", 1)->first(["codigo_interno"])->toArray();
+        if($empresa["codigo_interno"] == $dados_request["codigo_interno"]){
+            if($pedido == null){
+                $error = "Pedido não encontrado, verifique se o mesmo existe e tente novamente!";
+                session()->flash("error", $error);
+                return redirect()->route("index-confirmar-entrega");
+            } else{
+                if($pedido->status != "e"){
+                    if($pedido->codigo != $dados_request["codigo"]){
+                        $error = "Pedido encontrado, mas o código deo pedido é inválido, tente novamente!";
+                        session()->flash("error", $error);
+                        return redirect()->route("index-confirmar-entrega");
+                    } else {
+                        $pedido->status = "e";
+                        $pedido->save();
+                        $success = "Pedido entregue com sucesso";
+                        session()->flash("success", $success);
+                        return redirect()->route("index-confirmar-entrega");
+                    }
+                } else {
+                    $error = "Este pedido já foi entregue";
+                    session()->flash("error", $error);
+                    return redirect()->route("index-confirmar-entrega");
+                }
+            }
+        } else {
+            $error = "Código interno incorreto";
+            session()->flash("error", $error);
+            return redirect()->route("index-confirmar-entrega");
+        }
+    }
+
 }

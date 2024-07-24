@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nome', 25)->nullable();
             $table->decimal('total', 8, 2)->nullable();
             $table->decimal('lucro', 8, 2)->nullable();
-            $table->unsignedBigInteger('forma_pagamentos_id')->nullable();
+            $table->unsignedBigInteger('forma_pagamento_id')->nullable();
             $table->decimal('taxa', 4, 2)->nullable();
             $table->decimal('dinheiro', 8, 2)->nullable();
             $table->decimal('troco', 8, 2)->nullable();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->datetime('data_abertura')->nullable();
             $table->datetime('data_fechamento')->nullable();
 
-            $table->foreign('forma_pagamentos_id')->references('id')->on('forma_pagamentos');
+            $table->foreign('forma_pagamento_id')->references('id')->on('forma_pagamentos');
         });
     }
 

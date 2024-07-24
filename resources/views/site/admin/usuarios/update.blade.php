@@ -7,16 +7,12 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
+    <style>
+        
+    </style>
 @stop
 
 @section('content')
-    @if (session('success'))
-        <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-            <span style="color: #ffffff;" class="icon-alert fa-solid fa-circle-check"></span>
-            <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-        </div>
-    @endif
     <div class="d-flex row justify-content-center">
         <div class="row col-md-4 justify-content-center">
             <span>{{ $user->name }}</span>&nbsp;&nbsp;|&nbsp;&nbsp;<span>{{ $user->email }}</span>
@@ -39,7 +35,6 @@
                     @endphp
                     <button class="btn btn-outline-success" type="submit">Salvar</button>
                 </form>
-                
             </div>
         </div>
     </div>
@@ -47,8 +42,15 @@
 
 @section('js')
     <script>
-        
+
         $(document).ready(function() {
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
 
             $('.alert').addClass("show");
             $('.alert').removeClass("hide");
@@ -56,11 +58,8 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500)
+            
         })
 
     </script>

@@ -13,15 +13,17 @@ class Pedido extends Model
 
     protected $fillable = [
         "id",
-        "users_id",
+        "user_id",
         "total",
         "lucro",
-        "forma_pagamentos_id",
+        "forma_pagamento_id",
         "pontos",
+        "pontos_troca",
         "dinheiro",
         "troco",
         "frete",
         "novo_endereco",
+        "codigo",
         "status",
         "data",
     ];

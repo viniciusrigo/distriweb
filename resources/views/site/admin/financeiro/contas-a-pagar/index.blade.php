@@ -7,45 +7,12 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
-
     <style>
-        ::-webkit-scrollbar{
-            width: 7px;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 30px;
-            background-color: #cccccc;
-        }
-        ::-webkit-scrollbar-thumb:hover{
-            border-radius: 30px;
-            background-color: #a6a6a6;
-        }
-    </style>
 
+    </style>
 @endsection
 
 @section('content')
-    {{-- POP UPs --}}
-    @if (session('error')) 
-    <div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
-        <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
-        <span style="color: #ce0000;" class="msg">{{ session('error') }}</span>
-    </div>
-    @endif
-    @if (session('alerta'))
-    <div style="background: #ffdb9b; border-left: 8px solid #ffa502;" class="alert hide">
-        <span style="color: #ce8500;" class="fas fa-exclamation-circle"></span>
-        <span style="color: #ce8500;" class="msg">{{ session('alerta') }}</span>
-    </div>
-    @endif
-    @if (session('success'))
-    <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-        <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
-        <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-    </div>
-    @endif
-
     <div class="d-flex justify-content-center row mb-1">
 
         <div class="col-12">
@@ -68,7 +35,9 @@
                                 <label for="fornecedor_id" style="margin: 0px;">Fornecedor<code>*</code></label>
                                 <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="fornecedor_id" name="fornecedor_id" required>
                                     <option value="">Escolha...</option>
-                                    <option value="1">Sanepar</option>
+                                    @foreach ($fornecedores as $fornecedores)
+                                        <option value="{{ $fornecedores->id }}">{{ $fornecedores->nome }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="m-1 col-2">
@@ -135,9 +104,9 @@
                                                     <td>{{ $conta->nome }}</td>
                                                     <td>{{ $conta->banco_nome }}</td>
                                                     @php
-                                                        $hoje = date('Y-m-d');
+                                                        $hoje = date('Y-m-d 00:00:01');
                                                         $vencimentoSegundos = strtotime($conta->vencimento);
-                                                        $hojeSegundos = time();
+                                                        $hojeSegundos = strtotime($hoje);
                                                         $diferenca = ($vencimentoSegundos - $hojeSegundos);
                                                         if($conta->status == 'a') {
                                                             if($diferenca < 0){
@@ -239,6 +208,14 @@
 @section('js')
     <script>
         $(document).ready(function() {
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
+
             new DataTable('#tabela_contas', {
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
@@ -264,11 +241,7 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500);
         })
     </script>
 @stop

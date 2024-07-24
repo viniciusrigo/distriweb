@@ -7,29 +7,12 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
+    <style>
+
+    </style>
 @stop
 
 @section('content')
-    @if (session('success'))
-    <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-        <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
-        <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-    </div>
-    @endif
-    @if (session('alert'))
-    <div style="background: #ffdb9b; border-left: 8px solid #ffa502;" class="alert hide">
-        <span style="color: #ce8500;" class="fas fa-exclamation-circle"></span>
-        <span style="color: #ce8500;" class="msg">{{ session('alert') }}</span>
-    </div>
-    @endif
-    @if (session('error')) 
-    <div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
-        <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
-        <span style="color: #ce0000;" class="msg">{{ session('error') }}</span>
-    </div>
-    @endif
-
     <div class="d-flex justify-content-center row">
         @if (isset($caixa_aberto))
         <div class="col-md-11">
@@ -72,22 +55,22 @@
                                     <table id="tabela-fluxo" class="table hover compact">
                                         <thead>
                                             <tr>
-                                                <th style="text-align:center"><span class="badge badge-warning text-white">#</span></th>
-                                                <th style="text-align:center"><span class="badge badge-warning text-white">Venda</span></th>
-                                                <th style="text-align:center"><span class="badge badge-success">Entrada</span></th>
-                                                <th style="text-align:center"><span class="badge badge-danger">Saída</span></th>
-                                                <th style="text-align:center"><span class="badge badge-info">Data</span></th>
+                                                <th style="text-align:left"><span class="badge badge-warning text-white">#</span></th>
+                                                <th style="text-align:left"><span class="badge badge-warning text-white">Venda</span></th>
+                                                <th style="text-align:left"><span class="badge badge-success">Entrada</span></th>
+                                                <th style="text-align:left"><span class="badge badge-danger">Saída</span></th>
+                                                <th style="text-align:left"><span class="badge badge-info">Data</span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @isset($fluxo)
                                                 @foreach ($fluxo as $fluxo)
                                                     <tr>
-                                                        <td style="text-align:center">{{ $fluxo["id"] }}</td>
-                                                        <td style="text-align:center">R${{ $fluxo["venda"] }}</td>
-                                                        <td style="text-align:center">R${{ $fluxo["dinheiro"] }}</td>
-                                                        <td style="text-align:center">R${{ $fluxo["troco"] }}</td>
-                                                        <td style="text-align:center">{{ date('H:i:s d/m/Y', strtotime($fluxo["data"])) }}</td>
+                                                        <td style="text-align:left">{{ $fluxo["id"] }}</td>
+                                                        <td style="text-align:left">R${{ $fluxo["venda"] }}</td>
+                                                        <td style="text-align:left">R${{ $fluxo["dinheiro"] }}</td>
+                                                        <td style="text-align:left">R${{ $fluxo["troco"] }}</td>
+                                                        <td style="text-align:left">{{ date('H:i:s d/m/Y', strtotime($fluxo["data"])) }}</td>
                                                     </tr>
                                                 @endforeach
                                             @endisset
@@ -101,7 +84,7 @@
                 <form action="{{ route('admin.caixa.close') }}" method="POST"> 
                     @csrf
                     <input type="hidden" name="status" value="f">
-                    <input type="hidden" name="saldo_atual" value="{{ $fluxo->sum('venda') + $caixa_aberto->valor_inicial }}">
+                    <input type="hidden" name="saldo_atual" value="{{ $banco->saldo }}">
                     <div class="card table-responsive p-0">
                         <input type="text" name="valor_retirada" class="form-control col-md-3 ml-auto mr-auto" placeholder="Digite valor de retirada" required>
                         <button type="submit" class="btn btn-danger">
@@ -113,7 +96,7 @@
             @else
                 <form action="{{ route('admin.caixa.open') }}" method="POST" class="mt-4"> 
                     @csrf
-                    <input type="hidden" name="users_id" value="{{ auth()->user()->id }}">
+                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                     <input type="hidden" name="data_abertura" value="{{ now() }}">
                     <div class="card table-responsive p-0">
                         @if (isset($ult_caixa))
@@ -154,9 +137,9 @@
                                     <tbody>
                                         @isset($caixas)
                                             @foreach ($caixas as $caixa)
-                                                <tr>
+                                                <tr >
                                                     <td style="text-align:left">{{ $caixa["id"] }}</td>
-                                                    <td style="text-align:left">{{ $caixa["users_id"] }}</td>
+                                                    <td style="text-align:left">{{ $caixa["user_id"] }}</td>
                                                     <td style="text-align:left">R${{ $caixa["valor_inicial"] }}</td>
                                                     <td style="text-align:left">R${{ $caixa["valor_retirada"] }}</td>
                                                     <td style="text-align:left">R${{ $caixa["valor_final"] }}</td>
@@ -191,6 +174,13 @@
     <script>
         
         $(document).ready(function() {
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
 
             new DataTable('#tabela-fluxo', {
                 language: {
@@ -217,11 +207,7 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500);
         })
 
     </script>

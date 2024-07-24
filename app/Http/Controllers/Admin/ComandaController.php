@@ -11,38 +11,37 @@ use App\Models\Banco;
 use App\Models\Caixa;
 use App\Models\CarrinhoComanda;
 use App\Models\Comanda;
-use App\Models\ComandaProduto;
-use App\Models\Estoque;
 use App\Models\FluxoCaixa;
 use App\Models\FormaPagamento;
 use App\Models\LocalVenda;
 use App\Models\Lote;
 use App\Models\MovimentacoesFinanceira;
+use App\Models\Pedido;
 use App\Models\Produto;
+use App\Models\VariaveisProduto;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Illuminate\Support\Facades\Redirect;
 
 class ComandaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware("auth");
     }
 
-    public function index(Comanda $comanda){
+    public function page_index(Comanda $comanda){
         $comandas = DB::table("comandas")
             ->where("status", "a")
             ->get();
 
          $comandas_fechadas = DB::table("comandas")->where("status", "f")
-            ->join("forma_pagamentos", "comandas.forma_pagamentos_id", "=","forma_pagamentos.id")
+            ->join("forma_pagamentos", "comandas.forma_pagamento_id", "=","forma_pagamentos.id")
             ->select(
                 "comandas.id",
                 "comandas.nome",
                 "comandas.total",
                 "comandas.lucro",
-                "comandas.forma_pagamentos_id",
+                "comandas.forma_pagamento_id",
                 "forma_pagamentos.nome as pagamento_nome",
                 "comandas.dinheiro",
                 "comandas.troco",
@@ -52,163 +51,190 @@ class ComandaController extends Controller
             )->get();
 
         for($i= 0;$i<count($comandas);$i++) {
-            $comandaProduto = DB::table('carrinho_comandas')->where("comandas_id", "=", $comandas[$i]->id)
-                                                           ->join("produtos", "carrinho_comandas.produtos_id", "=","produtos.id")
-                                                           ->select("carrinho_comandas.id", "produtos.nome", "produtos.preco", "carrinho_comandas.quantidade", "carrinho_comandas.data_compra")
-                                                           ->get();
+            $comandaProduto = DB::table("carrinho_comandas")->where("comanda_id", "=", $comandas[$i]->id)
+            ->join("produtos", "carrinho_comandas.produto_id", "=","produtos.id")
+            ->join("variaveis_produtos", "carrinho_comandas.variavel_produto_id", "=","variaveis_produtos.id")
+            ->select(
+                "carrinho_comandas.id",
+                "carrinho_comandas.data",
+                "produtos.nome as produto_nome",
+                "variaveis_produtos.variavel_nome",
+                "variaveis_produtos.preco",
+                "variaveis_produtos.preco_promocao",
+                "variaveis_produtos.promocao"
+            )->get();
 
             $comandas[$i]->produtos = $comandaProduto;
-            $comandas[$i]->data_abertura = date('H:i:s', strtotime($comandas[$i]->data_abertura));
-            $comandas[$i]->data_fechamento = date('H:i:s', strtotime($comandas[$i]->data_fechamento));
+            $comandas[$i]->data_abertura = date("H:i:s", strtotime($comandas[$i]->data_abertura));
+            $comandas[$i]->data_fechamento = date("H:i:s", strtotime($comandas[$i]->data_fechamento));
         }
 
-        return view("site/admin/comandas/index", compact("comandas", "comandas_fechadas"));
+        $variaveis_produtos = VariaveisProduto::join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select("variaveis_produtos.id", "produtos.nome as produto_nome", "variaveis_produtos.variavel_nome", "produtos.categoria_id")
+        ->where("categoria_id", "!=", 5)
+        ->where("categoria_id", "!=", 6)
+        ->orderBy("produto_nome", "asc")->get();
+
+        return view("site/admin/comandas/index", compact("comandas", "comandas_fechadas", "variaveis_produtos"));
     }
 
     public function store(Request $request, Comanda $comanda){
-        $caixa_aberto = Caixa::where('status', 'a')->first();
-        if (!isset($caixa_aberto)){
+        try{
+            $caixa_aberto = Caixa::where("status", "a")->first();
+            if (!isset($caixa_aberto)){
 
-            $alert = "Abra o caixa antes de começar as vendas";
-            session()->flash("alert", $alert);
+                $error = "Abra o caixa antes de começar as vendas";
+                session()->flash("error", $error);
 
-            return redirect()->route("admin.caixa.index");
+                return redirect()->route("admin.caixa.index");
+            }
+
+            $dados = $request->all();
+            $dados["data_abertura"] = now()->format("Y-m-d H:i:s");
+            $comanda->create($dados);
+
+            $success = "Comanda aberta com sucesso";
+            session()->flash("success", $success);
+
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->with("error", $e->getMessage());
         }
-
-        $dados = $request->all();
-        $dados['data_abertura'] = now()->format('Y-m-d H:i:s');
-        $comanda->create($dados);
-
-        $success = "Comanda aberta com sucesso";
-        session()->flash("success", $success);
-
-        return redirect()->back();
     }
 
     public function destroy(string $id) {
+        try{
+            $comanda = Comanda::find($id);
 
-        $carrinho_comanda = CarrinhoComanda::where('comandas_id', "=", $id)->get();
-        $comanda = Comanda::find($id);
+            $comanda->delete();
 
-        if(count($carrinho_comanda) >  0){
-            $error = "Erro ao excluir, pois existe itens na comanda";
-            session()->flash("error", $error);
-            return redirect()->back();
+            $success = "Comanda excluída com sucesso";
+            session()->flash("success", $success);
+
+            return redirect()->route("admin.comandas.index");
+        } catch (Exception $e) {
+            //dd($e);
+            return redirect()->back()->with("error", $e->getMessage());
         }
-
-        $comanda->delete();
-
-        $success = "Comanda excluída com sucesso";
-        session()->flash("success", $success);
-
-        return redirect()->route('admin.comandas.index');
     }
 
-    public function add_produto(Request $request, Produto $produto) {
-        $produto_request = $request->except('_token');
-        
-        /* PEGANDO O PRODUTO DO ESTOQUE */
-        $produto_estoque = $produto->where("codigo_barras", "=", $produto_request["codigo_barras"])->first();
-
-        if ($produto_estoque->quantidade == 0) {
-            $lote = Lote::where("codigo_barras", $produto_request["codigo_barras"])->orderBy("data_cadastro", "asc")->first();
-            if(isset($lote)){
-                $produto_estoque->quantidade = $lote->quantidade;
-                $produto_estoque->preco = $lote->preco;
-                $produto_estoque->preco_custo = $lote->preco_custo;
-                $produto_estoque->preco_promocao = $lote->preco_promocao;
-                $produto_estoque->validade = $lote->validade;
-                $produto_estoque->data_cadastro = $lote->data_cadastro;
-
-                $lote->delete();
+    public function add_product(Request $request, VariaveisProduto $produto) {
+        try{
+            $dados_request = $request->except("_token");
+            /* PEGANDO O PRODUTO DO ESTOQUE */
+            if(!isset($dados_request["variavel_produto_id"])){
+                $variavel_produto = $produto->where("codigo_barras", $dados_request["codigo_barras"])->first();
             } else {
-                $error = "Produto indisponível, verifique o(s) Estoque/Lotes";
-                session()->flash("error", $error);
-    
-                return redirect()->back();
+                $variavel_produto = $produto->where("id", $dados_request["variavel_produto_id"])->first();
             }
-        }
-        $produto_estoque->quantidade -= 1;
-        $produto_estoque->ult_compra = now(); 
-        $produto_estoque->save();
+
+            if ($variavel_produto->variavel_quantidade == 0) {
+                if(!isset($$dados_request["variavel_produto_id"])){
+                    $lote = Lote::where("codigo_barras", $dados_request["codigo_barras"])->orderBy("data_cadastro", "asc")->first();
+                } else {
+                    $lote = Lote::where("variavel_produto_id", $dados_request["variavel_produto_id"])->orderBy("data_cadastro", "asc")->first();
+                }
+                
+                if(isset($lote)){
+                    $variavel_produto->variavel_quantidade = $lote->quantidade;
+                    $variavel_produto->preco = $lote->preco;
+                    $variavel_produto->preco_custo = $lote->preco_custo;
+                    $variavel_produto->preco_promocao = $lote->preco_promocao;
+                    $variavel_produto->lucro = $variavel_produto->preco - $variavel_produto->preco_custo;
+                    $variavel_produto->validade = $lote->validade;
+                    $variavel_produto->data_cadastro = $lote->data_cadastro;
+                    try{
+                        $lote->delete();
+                    } catch (Exception $e) {
+                        return redirect()->back()->with("error", $e->getMessage());
+                    }
+                } else {
+                    $error = "Produto indisponível, verifique o(s) Estoque/Lotes";
+                    session()->flash("error", $error);
         
-        $produto_comanda = CarrinhoComanda::where("produtos_id", $produto_estoque->id)->where("comandas_id", $produto_request["id"])->first();
-        if(isset($produto_comanda)){
-            $produto_comanda->quantidade += 1;
-            $produto_comanda->save();
-        } else {
+                    return redirect()->back();
+                }
+            }
+            $variavel_produto->variavel_quantidade -= 1;
+            $variavel_produto->ult_compra = now(); 
             
             /* ADICONANDO PRODUTO AO CARRINHO DA COMANDA */
             $carrinho = new CarrinhoComanda;
-            $carrinho->comandas_id = $produto_request["id"];
-            $carrinho->produtos_id = $produto_estoque->id;
-            $carrinho->quantidade = 1;
-            $carrinho->data_compra = now();
-            $carrinho->save();
+            $carrinho->comanda_id = $dados_request["comanda_id"];
+            $carrinho->produto_id = $variavel_produto->produto_id;
+            $carrinho->variavel_produto_id = $variavel_produto->id;
+            $carrinho->data = now();
+            
+            
+            /* ATUALIZANDO VALOR TOTAL E LUCRO */
+            $comanda = Comanda::find($dados_request["comanda_id"]);
+            $comanda["total"] = $comanda["total"] + ($variavel_produto->promocao == "n" ? $variavel_produto->preco : $variavel_produto->preco_promocao);
+            $comanda["lucro"] += $variavel_produto->lucro;
+            
+            DB::transaction(function() use ($variavel_produto, $carrinho, $comanda){
+                $variavel_produto->save();
+                $carrinho->save();
+                $comanda->save();
+            });
+
+            $success = "Produto adicionado com sucesso";
+            session()->flash("success", $success);
+
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->with("error", $e->getMessage());
         }
-
-
-        /* ATUALIZANDO VALOR TOTAL E LUCRO */
-        $comanda = Comanda::find($produto_request['id']);
-        $comanda['total'] = $comanda['total'] + ($produto_estoque->promocao == "n" ? $produto_estoque->preco : $produto_estoque->preco_promocao);
-        $comanda['lucro'] += $produto_estoque->lucro;
-        $comanda->save();
-
-        $success = "Produto adicionado com sucesso";
-        session()->flash("success", $success);
-
-        return redirect()->back();
     }
 
-    public function remove_produto(Request $resquest) {
+    public function remove_product(Request $resquest) {
 
-        $produto_request = $resquest->all();
-        $produto_carrinho = CarrinhoComanda::find($produto_request['id']);
-        $comanda = Comanda::find($produto_request['comandas_id']);
-        $produto_estoque = Produto::find($produto_carrinho["produtos_id"]);
+        try {
+            $produto_request = $resquest->all();
+            $produto_carrinho = CarrinhoComanda::find($produto_request["variavel_produto_id"]);
+            $comanda = Comanda::find($produto_request["comanda_id"]);
+            $variavel_produto = VariaveisProduto::find($produto_carrinho["variavel_produto_id"]);
 
-        /* REMOVENDO PRODUTO DO CARRINHO DA COMANDA */
-        if($produto_carrinho->quantidade == 1){
-            $produto_carrinho->delete();
+            /* ATUALIZANDO VALOR DA COMANDA */
+            $comanda["total"] -= $variavel_produto["preco"];
+            $comanda["lucro"] -= $variavel_produto["lucro"];
+            
+            /* ATUALIZANDO A QUANTIDADE EM ESTOQUE */
+            $variavel_produto["variavel_quantidade"] += 1;
+            
+            DB::transaction(function() use ($comanda, $variavel_produto, $produto_carrinho){
+                $comanda->save();
+                $variavel_produto->save();
+                /* REMOVENDO PRODUTO DO CARRINHO DA COMANDA */
+                $produto_carrinho->delete();
+            });
+
             $success = "Produto removido com sucesso";
             session()->flash("success", $success);
-        } else {
-            $produto_carrinho->quantidade -= 1;
-            $produto_carrinho->save();
-            $success = "Removido 1 unidade deste produto";
-            session()->flash("success", $success);
-        }
 
-        /* ATUALIZANDO VALOR DA COMANDA */
-        $comanda["total"] -= $produto_estoque["preco"];
-        $comanda["lucro"] -= $produto_estoque["lucro"];
-        $comanda->save();
-
-        /* ATUALIZANDO A QUANTIDADE EM ESTOQUE */
-        $produto_estoque["quantidade"] += 1;
-        $produto_estoque->save();
-
-        return redirect()->back();
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->with("error", $e->getMessage());
+        }    
     }
 
-    public function closed(Request $request, Comanda $comanda) {
-        // try {
-            $comanda = Comanda::find($request->id);
+    public function closed(Request $request) {
+        try {
+            $comanda = Comanda::find($request->comanda_id);
             $local = LocalVenda::find(3);
-            $carrinho = CarrinhoComanda::where("comandas_id", $request->id)->get()->toArray();
-            if($request["pagamento"] == 'credito'){
-                $comanda->forma_pagamentos_id = $local->credito_id;
-            } else if ($request["pagamento"] == 'debito') {
-                $comanda->forma_pagamentos_id = $local->debito_id;
+            $carrinho = CarrinhoComanda::where("comanda_id", $request->comanda_id)->get()->toArray();
+            if($request["pagamento"] == "credito"){
+                $comanda->forma_pagamento_id = $local->credito_id;
+            } else if ($request["pagamento"] == "debito") {
+                $comanda->forma_pagamento_id = $local->debito_id;
             } else {
-                $comanda->forma_pagamentos_id = $request["pagamento"];
+                $comanda->forma_pagamento_id = $request["pagamento"];
             }
             $nova_mov = new MovimentacoesFinanceira;
             $nova_venda = new Venda();
-            $taxa_pagamento = FormaPagamento::where("id", $comanda->forma_pagamentos_id)->first();
+            $taxa_pagamento = FormaPagamento::where("id", $comanda->forma_pagamento_id)->first();
             
             /* REALIZAÇÃO DA TAXAÇÃO DO VALOR TOTAL */
-            if ($comanda->forma_pagamentos_id > "3") {
+            if ($comanda->forma_pagamento_id > "3") {
                 $comanda->total = $comanda->total - ($comanda->total / 100 * $taxa_pagamento->taxa);
                 $comanda->lucro -= round(($comanda->total * 100) / (100 - $taxa_pagamento->taxa) - $comanda->total, 2);
                 $comanda->taxa = $taxa_pagamento->taxa;
@@ -220,83 +246,101 @@ class ComandaController extends Controller
             $comanda->troco = $request["troco"];
             $comanda->status = "f";
             $comanda->data_fechamento = now();
-            $comanda->save();
             
+            $novo_fluxo = "";
+
             if($request["pagamento"] == "2"){
 
                 /* NOVO FLUXO */
-                $caixa_aberto = Caixa::where('status', 'a')->first("id");
+                $caixa_aberto = Caixa::where("status", "a")->first("id");
                 $novo_fluxo = new FluxoCaixa();
-                $novo_fluxo["caixas_id"] = $caixa_aberto->id;
+                $novo_fluxo["caixa_id"] = $caixa_aberto->id;
                 $novo_fluxo["venda"] = $comanda->total;
                 $novo_fluxo["dinheiro"] = $request->dinheiro;
                 $novo_fluxo["troco"] = $request->troco;
                 $novo_fluxo["data"] = now();
-                $novo_fluxo->save();
+                
             }
 
             /* NOVA MOVIMENTAÇÃO */
-            $nova_mov['local_id'] = 3;
-            $nova_mov['cliente_fornecedor'] = $comanda->nome;
-            $nova_mov['valor'] = $comanda->total;
-            $nova_mov['lucro'] = $comanda->lucro;
-            $nova_mov['forma_pagamentos_id'] = $comanda->forma_pagamentos_id;
-            $nova_mov['tipo'] = "e";
-            $nova_mov['data'] = $comanda->data_fechamento;
-            $nova_mov->save();
+            $nova_mov["local_id"] = 3;
+            $nova_mov["cliente_fornecedor"] = $comanda->nome;
+            $nova_mov["valor"] = $comanda->total;
+            $nova_mov["lucro"] = $comanda->lucro;
+            $nova_mov["forma_pagamento_id"] = $comanda->forma_pagamento_id;
+            $nova_mov["tipo"] = "e";
+            $nova_mov["data"] = $comanda->data_fechamento;
 
             /* NOVA VENDA */
-            $nova_venda['local_id'] = 3;
-            $nova_venda['valor'] = $comanda->total;
-            $nova_venda['lucro'] = $comanda->lucro;
-            $nova_venda['comandas_id'] = $comanda->id;
-            $nova_venda['forma_pagamentos_id'] = $comanda->forma_pagamentos_id;
-            $nova_venda['taxa'] = $taxa_pagamento->taxa;
-            $nova_venda['dinheiro'] = $comanda->dinheiro;
-            $nova_venda['troco'] = $comanda->troco;
-            $nova_venda['status'] = 'f';
-            $nova_venda['data_venda'] = $comanda->data_fechamento;
-            $nova_venda->save();
+            $nova_venda["local_id"] = 3;
+            $nova_venda["valor"] = $comanda->total;
+            $nova_venda["lucro"] = $comanda->lucro;
+            $nova_venda["comanda_id"] = $comanda->id;
+            $nova_venda["forma_pagamento_id"] = $comanda->forma_pagamento_id;
+            $nova_venda["taxa"] = $taxa_pagamento->taxa;
+            $nova_venda["dinheiro"] = $comanda->dinheiro;
+            $nova_venda["troco"] = $comanda->troco;
+            $nova_venda["status"] = "f";
+            $nova_venda["data_venda"] = $comanda->data_fechamento;
 
             $fluxo_banco = new FluxoBanco();
-            $fluxo_banco->local_id = $banco->id;
-            $fluxo_banco->valor = $nova_venda['valor'];
+            $fluxo_banco->banco_id = $banco->id;
+            $fluxo_banco->valor = $nova_venda["valor"];
             $fluxo_banco->tipo = "e";
             $fluxo_banco->data = now();
-            $fluxo_banco->save();  
             
             $banco->saldo += $comanda->total;
-            $banco->save();
 
-            /* SALVANDOS OS ITENS DO CARRINHO NA TABELA DE PRODUTOS VENDIDOS POR COMANDA */
-            $produtos_comanda = new ProdutosComanda();
-            for($i = 0; $i < count($carrinho); $i++){
-                $produtos_comanda->create($carrinho[$i]);
-            }
+            DB::transaction(function() use ($request, $novo_fluxo, $comanda, $nova_mov, $nova_venda, $fluxo_banco, $banco, $carrinho){
+                if($request["pagamento"] == "2"){
+                    $novo_fluxo->save();
+                }
+                $comanda->save();
+                $nova_mov->save();
+                $nova_venda->save();
+                $fluxo_banco->save(); 
+                $banco->save();
+                /* SALVANDOS OS ITENS DO CARRINHO NA TABELA DE PRODUTOS VENDIDOS POR COMANDA */
+                $produtos_comanda = new ProdutosComanda();
+                for($i = 0; $i < count($carrinho); $i++){
+                    $produtos_comanda->create($carrinho[$i]);
+                }
 
-            /* APAGANDO TODOS OS ITENS QUE TEM NO CARRINHO COM ID DA COMANDA */
-            CarrinhoComanda::where("comandas_id", $comanda->id)->delete();
+                /* APAGANDO TODOS OS ITENS QUE TEM NO CARRINHO COM ID DA COMANDA */
+                CarrinhoComanda::where("comanda_id", $comanda->id)->delete();
+            });            
 
             $success = "Comanda fechada com sucesso";
             session()->flash("success", $success);
 
             return redirect()->back();
-        // } catch (Exception $e) {
-        //     return redirect()->back()->with('error', $e->getMessage());
-        // }
+        } catch (Exception $e) {
+            return redirect()->back()->with("error", $e->getMessage());
+        }
     }
 
     public function imprimir(string|int $id){
         $id = intval($id);
         $comanda = Comanda::find($id);
-        $produtos = CarrinhoComanda::where("comandas_id", $id)->get()->toArray();
+        $produtos = CarrinhoComanda::where("comanda_id", $id)->get()->toArray();
         //dd($produtos);
         $comanda["produtos"] = [];
         for($i = 0; $i < count($produtos); $i++){
-            $produto_estoque = Produto::where("id", $produtos[$i]["produtos_id"])->select('nome', 'preco', 'preco_promocao', 'promocao')->first();
-            $comanda["produtos"] += [$i => array("nome" => $produto_estoque->nome, "quantidade" => $produtos[$i]["quantidade"], "preco" => $produto_estoque->promocao == "n" ? $produto_estoque->preco : $produto_estoque->preco_promocao)];
+            $produto_estoque = VariaveisProduto::
+            join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+            ->select("produtos.nome", "variaveis_produtos.variavel_nome", "variaveis_produtos.preco", "variaveis_produtos.preco_promocao", "variaveis_produtos.promocao")
+            ->where("variaveis_produtos.id", $produtos[$i]["variavel_produto_id"])
+            ->first();
+            $comanda["produtos"] += [$i => array("nome" => $produto_estoque->nome, "variavel_nome" => $produto_estoque->variavel_nome, "preco" => $produto_estoque->promocao == "n" ? $produto_estoque->preco : $produto_estoque->preco_promocao)];
         }
 
-        return view("site/admin/comandas/imprimir", compact('comanda'));
+        return view("site/admin/comandas/imprimir", compact("comanda"));
+    }
+
+    public function new_request(){
+        $pedidos = Pedido::where("status", "n")->get();
+        $qtd = count($pedidos);
+
+        return response()->json($qtd);
     }
 }

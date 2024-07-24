@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('fluxo_bancos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('local_id');
+            $table->unsignedBigInteger('banco_id');
             $table->decimal('valor', 8, 2);
             $table->enum('tipo', ['e', 's']);
+            $table->enum('mov_extra', ['n', 's'])->nullable()->default('n');
+            $table->string('motivo', 100)->nullable();
             $table->datetime('data');
 
-            $table->foreign('local_id')->references('id')->on('local_vendas');
+            $table->foreign('banco_id')->references('id')->on('bancos');
         });
     }
 

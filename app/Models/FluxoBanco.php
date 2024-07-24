@@ -16,6 +16,7 @@ class FluxoBanco extends Model
         "local",
         "valor",
         "tipo",
+        "motivo",
         "data"
     ];
 }

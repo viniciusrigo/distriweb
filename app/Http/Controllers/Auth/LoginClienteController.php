@@ -65,6 +65,7 @@ class LoginClienteController extends Controller
         $user['cliente'] = "s";
         $user['pontos'] = 0;
         $user['celular'] = $request->input('celular');
+        $user['zona_id'] = $request->input('zona_id');
         $user['logradouro'] = $request->input('logradouro').", ".$request->input('numero');
         
         $user = User::create($user);

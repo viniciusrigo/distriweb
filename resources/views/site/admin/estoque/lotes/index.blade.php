@@ -7,45 +7,12 @@
 @stop
 
 @section('css')
-
     <style>
-        ::-webkit-scrollbar{
-            width: 7px;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 30px;
-            background-color: #cccccc;
-        }
-        ::-webkit-scrollbar-thumb:hover{
-            border-radius: 30px;
-            background-color: #a6a6a6;
-        }
-    </style>
 
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
+    </style>
 @stop
 
 @section('content')
-    {{-- POP UPs --}}
-    @if (session('error'))
-    <div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
-        <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
-        <span style="color: #ce0000;" class="msg">{{ session('error') }}</span>
-    </div>
-    @endif
-    @if (session('alerta'))
-    <div style="background: #ffdb9b; border-left: 8px solid #ffa502;" class="alert hide">
-        <span style="color: #ce8500;" class="fas fa-exclamation-circle"></span>
-        <span style="color: #ce8500;" class="msg">{{ session('alerta') }}</span>
-    </div>
-    @endif
-    @if (session('success'))
-    <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-        <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
-        <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-    </div>
-    @endif
-
     <div class="d-flex justify-content-center row mb-1">
         {{-- AÇÕES --}}
         <div class="col-12">
@@ -53,11 +20,12 @@
                 <div style="border-radius:6px" class="d-flex col-12 bg-white justify-content-center m-1 p-2">
                     <form action="{{ route('admin.estoque.lote.novo') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="produtos_id" value="{{ session('produtos_id') }}">
+                        <input type="hidden" name="variavel_produto_id" value="{{ session('variavel_produto_id') }}">
+                        <input type="hidden" name="produto_id" value="{{ session('produto_id') }}">
                         <div id="div_codigo" class="row justify-content-center">
                             <div class="m-1">
                                 <label for="codigo_barras" style="margin: 0px;">Código de Barras<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" value="{{ session('codigo_barras') }}">
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" value="{{ session('codigo_barras') }}" required>
                             </div>
                             @if (session('divs'))
                                 {!! session('divs') !!}
@@ -96,7 +64,7 @@
                                         @isset($lotes)
                                             @foreach ($lotes as $lote)
                                                 <tr class="tb-tr-bd">
-                                                    <td style="text-align:left">{{ $lote->nome }}</td>
+                                                    <td style="text-align:left">{{ $lote->nome }} {{ $lote->variavel_nome }}</td>
                                                     <td style="text-align:left">{{ $lote->quantidade }}</td>
                                                     <td style="text-align:left">{{ $lote->codigo_barras }}</td>
                                                     <td style="text-align:left">R${{ $lote->preco }}</td>
@@ -155,11 +123,7 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500);
 
         })
 

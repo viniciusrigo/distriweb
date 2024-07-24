@@ -13,7 +13,7 @@ class Caixa extends Model
 
     protected $fillable = [
         "id",
-        "users_id",
+        "user_id",
         "valor_inicial",
         "valor_final",
         "valor_retirada",

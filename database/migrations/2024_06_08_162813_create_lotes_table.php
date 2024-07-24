@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('lotes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('produtos_id');
+            $table->unsignedBigInteger('produto_id');
+            $table->unsignedBigInteger('variavel_produto_id');
             $table->integer('quantidade')->nullable();
             $table->string('codigo_barras', 30)->nullable();
             $table->decimal('preco', 10, 2)->nullable();
@@ -22,7 +23,8 @@ return new class extends Migration
             $table->datetime('validade');
             $table->datetime('data_cadastro');
 
-            $table->foreign('produtos_id')->references('id')->on('produtos');
+            $table->foreign('produto_id')->references('id')->on('produtos');
+            $table->foreign('variavel_produto_id')->references('id')->on('variaveis_produtos');
         });
     }
 

@@ -215,7 +215,7 @@ return [
     */
 
     'sidebar_mini' => 'lg',
-    'sidebar_collapse' => false,
+    'sidebar_collapse' => true,
     'sidebar_collapse_auto_size' => false,
     'sidebar_collapse_remember' => false,
     'sidebar_collapse_remember_no_transition' => true,
@@ -316,6 +316,18 @@ return [
             'can' => 'acesso_pdv'
         ],
         [
+            'text' => 'PDV2',
+            'url' => 'admin/pdv2',
+            'icon' => 'fas fa fa-shopping-cart',
+            'can' => 'acesso_pdv2'
+        ],
+        [
+            'text' => 'Venda Manual',
+            'url' => 'admin/venda-manual',
+            'icon' => 'fas fa-solid fa-basket-shopping',
+            'can' => 'acesso_venda_manual'
+        ],
+        [
             'text' => 'Comandas',
             'url' => 'admin/comandas',
             'icon' => 'fas fa fa-id-card',
@@ -366,7 +378,7 @@ return [
         ],
         [
             'text' => 'Financeiro',
-            'icon' => 'fas fa-solid fa-money-bill-transfer',
+            'icon' => 'fas fa-solid fa-hand-holding-dollar',
             'can' => 'acesso_financeiro',
             'submenu' => [
                 [
@@ -378,7 +390,7 @@ return [
                     'text' => 'Movimentações',
                     'url' => 'admin/financeiro/movimentacoes',
                     'icon' => 'fas fa fa-history'
-                ],
+                ]
             ],
         ],
         [
@@ -395,6 +407,11 @@ return [
                     'text' => 'Lotes',
                     'url' => 'admin/estoque/lotes',
                     'icon' => 'fas fa fa-solid fa-coins',
+                ],
+                [
+                    'text' => 'Manifestos',
+                    'url' => 'admin/estoque/manifestos',
+                    'icon' => 'fas fa fa-solid fa-thumbtack',
                 ],
             ],
         ],
@@ -417,17 +434,6 @@ return [
             'url' => 'admin/configuracao-global',
             'icon' => 'fas fa fa-cog',
             'can' => 'acesso_config_global'
-        ],
-        ['header' => 'Conta'],
-        [
-            'text' => 'Perfil',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user'
-        ],
-        [
-            'text' => 'Mudar Senha',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
         ]
     ],
 
@@ -497,7 +503,7 @@ return [
             ],
         ],
         'Chartjs' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
@@ -513,6 +519,21 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdn.jsdelivr.net/npm/sweetalert2@11',
+                ],
+            ],
+        ],
+        'Toastr' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js',
+                ],
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css',
                 ],
             ],
         ],
@@ -588,5 +609,5 @@ return [
     |
     */
 
-    'livewire' => true,
+    'livewire' => false,
 ];

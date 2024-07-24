@@ -38,7 +38,7 @@
     <body class="">
         <div class="conteiner d-flex justify-content-center align-items-center vh-100">
            <div class="row border d-flex rounded-5 p-3 bg-white m-3">
-                <div id="image" class="col-md-6 rounded-4 justify-content-center align-items-center flex-column left-box" style="background: #103cbe;">
+                <div id="image" class="col-md-6 rounded-4 justify-content-center align-items-center flex-column left-box bg-warning">
                     <div class="featured-image mb-3">
                         <img src="{{ asset('logincliente.png') }}" class="img-fluid" style="width: 250px;">
                     </div>
@@ -65,7 +65,7 @@
                                 </div>
                             </div>
                             <div class="input-group mb-3">
-                                <button class="btn btn-lg btn-primary w-100 fs-6">Acessar</button>
+                                <button class="btn btn-lg btn-warning w-100 fs-6">Acessar</button>
                             </div>
                         </form>
                         <div class="input-group mb-3">

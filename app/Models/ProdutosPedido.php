@@ -13,10 +13,10 @@ class ProdutosPedido extends Model
 
     protected $fillable = [
         "id",
-        "users_id",
-        "pedidos_id",
-        "produtos_id",
-        "qtd",
+        "user_id",
+        "pedido_id",
+        "produto_id",
+        "variavel_produto_id",
         "data"
     ];
 }

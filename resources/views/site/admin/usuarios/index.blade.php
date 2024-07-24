@@ -7,22 +7,9 @@
 @stop
 
 @section('css')
-
     <style>
-        ::-webkit-scrollbar{
-            width: 7px;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 30px;
-            background-color: #cccccc;
-        }
-        ::-webkit-scrollbar-thumb:hover{
-            border-radius: 30px;
-            background-color: #a6a6a6;
-        }
-    </style>
 
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
+    </style>
 @stop
 
 @section('content')
@@ -75,6 +62,13 @@
     <script>
         
         $(document).ready(function() {
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
 
             new DataTable('#tabela_usuarios', {
                 language: {
@@ -90,11 +84,7 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500)
         })
 
     </script>

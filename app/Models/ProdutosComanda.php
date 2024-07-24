@@ -12,8 +12,9 @@ class ProdutosComanda extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        "comandas_id",
-        "produtos_id",
-        "data_adicao"
+        "comanda_id",
+        "produto_id",
+        "variavel_produto_id",
+        "data"
     ];
 }

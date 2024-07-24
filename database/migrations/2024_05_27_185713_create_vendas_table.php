@@ -20,9 +20,10 @@ return new class extends Migration
             $table->decimal('taxa',4,2)->nullable();
             $table->integer('pontos')->nullable();
             $table->integer('descontos')->nullable();
-            $table->unsignedBigInteger('comandas_id')->nullable();
+            $table->unsignedBigInteger('comanda_id')->nullable();
+            $table->unsignedBigInteger('pedido_id')->nullable();
             $table->enum('estado', ['a','e'])->default('a');
-            $table->unsignedBigInteger('forma_pagamentos_id')->nullable();
+            $table->unsignedBigInteger('forma_pagamento_id')->nullable();
             $table->decimal('dinheiro',10,2)->nullable();
             $table->decimal('troco',10,2)->nullable();
             $table->enum('status', ['a','f'])->default('a');
@@ -32,8 +33,9 @@ return new class extends Migration
 
 
             $table->foreign('local_id')->references('id')->on('local_vendas');
-            $table->foreign('comandas_id')->references('id')->on('comandas');
-            $table->foreign('forma_pagamentos_id')->references('id')->on('forma_pagamentos');
+            $table->foreign('comanda_id')->references('id')->on('comandas');
+            $table->foreign('pedido_id')->references('id')->on('pedidos');
+            $table->foreign('forma_pagamento_id')->references('id')->on('forma_pagamentos');
         });
     }
 

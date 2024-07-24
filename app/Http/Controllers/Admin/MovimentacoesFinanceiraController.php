@@ -13,20 +13,22 @@ class MovimentacoesFinanceiraController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware("auth");
     }
 
-    public function index(){
+    public function page_index(){
         $movs_fin_e = MovimentacoesFinanceira::orderBy("data", "desc")
-        ->join("forma_pagamentos", "movimentacoes_financeiras.forma_pagamentos_id", "forma_pagamentos.id")
+        ->join("forma_pagamentos", "movimentacoes_financeiras.forma_pagamento_id", "forma_pagamentos.id")
         ->join("local_vendas", "movimentacoes_financeiras.local_id", "local_vendas.id")
         ->select(
             "movimentacoes_financeiras.*",
+            "forma_pagamentos.nome as pagamento_nome",
             "forma_pagamentos.taxa",
             "local_vendas.local"
-        )->get();
+        )->take(250)
+        ->get();
 
-        $pedidos = Pedido::all('frete', 'data');
+        $pedidos = Pedido::all("frete", "data");
 
         return view("site/admin/financeiro/movimentacoes/index", compact("movs_fin_e", "pedidos"));
     }

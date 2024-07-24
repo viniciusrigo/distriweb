@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('produtos_vendas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('vendas_id')->nullable(false);
-            $table->unsignedBigInteger('produtos_id')->nullable(false);
+            $table->unsignedBigInteger('venda_id')->nullable(false);
+            $table->unsignedBigInteger('produto_id')->nullable(false);
+            $table->unsignedBigInteger('variavel_produto_id')->nullable(false);
             $table->datetime('data_adicao')->nullable();
 
-            $table->foreign('vendas_id')->references('id')->on('vendas');
-            $table->foreign('produtos_id')->references('id')->on('produtos');
+            $table->foreign('venda_id')->references('id')->on('vendas');
+            $table->foreign('produto_id')->references('id')->on('produtos');
+            $table->foreign('variavel_produto_id')->references('id')->on('variaveis_produtos');
         });
     }
 

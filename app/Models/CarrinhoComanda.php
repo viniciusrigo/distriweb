@@ -13,9 +13,8 @@ class CarrinhoComanda extends Model
 
     protected $fillable = [
         "comanda_id",
-        "estoques_id",
-        "pnc",
-        "valor",
-        "data_compra"
+        "produto_id",
+        "variavel_produto_id",
+        "data"
     ];
 }

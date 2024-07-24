@@ -91,12 +91,12 @@
                                     <input type="text" class="form-control form-control-sm fs-6" id="cep" name="cep" placeholder="CEP">
                                 </div>
                                 <div class="form-group col-md-6 mb-1">
-                                    <select class="form-control form-control-sm fs-6" name="zona">
+                                    <select class="form-control form-control-sm fs-6" name="zona_id">
                                         <option value="">Zona...</option>
-                                        <option value="Norte">Norte</option>
-                                        <option value="Sul">Sul</option>
-                                        <option value="Leste">Leste</option>
-                                        <option value="Oeste">Oeste</option>
+                                        <option value="1">Norte</option>
+                                        <option value="2">Sul</option>
+                                        <option value="3">Leste</option>
+                                        <option value="4">Oeste</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-md-12 mb-1">
@@ -138,7 +138,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>   
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
         <script>
-
             $('#cep').on('blur', function() {
                 var busca = this.value;
                 $.get('https://viacep.com.br/ws/'+busca+'/json/', function (dados){
@@ -150,9 +149,6 @@
                     $('#ddd').val(dados.ddd)
                 })  
             })
-
-            
-            
         </script>
     </body>
 

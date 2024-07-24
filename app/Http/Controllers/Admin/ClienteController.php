@@ -13,8 +13,7 @@ class ClienteController extends Controller
         $this->middleware('auth');
     }
 
-    public function index() {
-
+    public function page_index() {
         $clientes = Cliente::where("cliente", "s")->get()->toArray();
         for ($i = 0; $i < count($clientes); $i++) {
             $ddd = substr($clientes[0]["celular"], 0, 2);

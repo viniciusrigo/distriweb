@@ -42,7 +42,7 @@
                                                 
                                             </td>
                                             <td style="text-align:left">{{ $mov->lucro == null ? null : 'R$'.$mov->lucro }}</td>
-                                            <td><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>{{$mov->forma_pagamentos_id}}</strong></span></td>
+                                            <td><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>{{$mov->pagamento_nome}}</strong></span></td>
                                             @php                                                
                                             if ($mov->tipo == "e") {
                                                     echo "<td><span style='background-color: #a4ee92; color: #255a1e; padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>Entrada</strong></span></td>";
@@ -78,12 +78,24 @@
 @section('js')
     <script>
         $(document).ready(function() {
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
+
             new DataTable('#tabela', {
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
                 },
                 pagingType: 'first_last_numbers',
                 order: [[0, 'desc']],
+                lengthMenu: [
+                    [25, 100, -1],
+                    [25, 100, 'All']
+                ],
             });
         })
     </script>

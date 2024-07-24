@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('cliente_fornecedor', 30);
             $table->decimal('valor', 8, 2);
             $table->decimal('lucro', 8, 2)->nullable();
-            $table->unsignedBigInteger('forma_pagamentos_id')->nullable();
+            $table->unsignedBigInteger('forma_pagamento_id')->nullable();
             $table->enum('tipo', ['e', 's']);
             $table->datetime('data');
 
-            $table->foreign('forma_pagamentos_id')->references('id')->on('forma_pagamentos');
+            $table->foreign('forma_pagamento_id')->references('id')->on('forma_pagamentos');
             $table->foreign('local_id')->references('id')->on('local_vendas');
         });
     }

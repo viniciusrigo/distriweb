@@ -12,8 +12,9 @@ class ProdutosVenda extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        "vendas_id",
-        "produtos_id",
+        "venda_id",
+        "produto_id",
+        "variavel_produto_id",
         "data_adicao"
     ];
 }

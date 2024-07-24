@@ -7,12 +7,9 @@
 @stop
 
 @section('css')
-
     <style>
 
     </style>
-
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
 @stop
 
 @section('content')
@@ -30,7 +27,6 @@
                                             <th style="text-align:left">Cliente</th>
                                             <th style="text-align:left">Local</th>
                                             <th style="text-align:left">Valor</th>
-                                            <th>Itens</th>
                                             <th>Pagamento</th>
                                             <th>Data</th>
                                             <th>#</th>
@@ -49,12 +45,11 @@
                                                             if($venda->taxa > 0){
                                                                 echo "<span class='badge badge-danger'>";
                                                                 echo "<i class='fa-solid fa-arrow-trend-down'></i>  R$";
-                                                                echo round(($venda->valor * 100) / (100 - $venda->taxa) - $venda->valor, 2);
+                                                                echo number_format(round(($venda->valor * 100) / (100 - $venda->taxa) - $venda->valor, 2), 2, '.', ',');
                                                                 echo "</span>";
                                                             }
                                                         @endphp
                                                     </td>
-                                                    <td><span style="cursor: pointer;background-color:#92d8ee;padding: 3px;border-radius: 5px;" class="text-primary" onclick="itens({{ $venda->id }})"><strong>Visualizar</strong></span></td>
                                                     <td><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>{{ $venda->pagamento_nome }}</strong></span></td>
                                                     <td>{{ date('H:i:s d/m/Y', strtotime($venda->data_venda)) }}</td>
                                                     <td>
@@ -68,7 +63,6 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th></th>
                                             <th></th>
                                             <th></th>
                                             <th></th>
@@ -104,13 +98,12 @@
                         html += "<tr>";
                         html += "<td>"+dados[i].codigo_barras+"</td>"
                         html += "<td>"+dados[i].nome+"</td>"
-                        html += "<td>R$"+dados[i].preco+"</td>"
                         html += "</tr>"
                     }
                     Swal.fire({
                         width: 540,
                         html: `
-                        <table class=d-flex justify-content-center">
+                        <table class="d-flex justify-content-center">
                             <tbody id="table" class="table compact">
                                 ${html}
                             </tbody>
@@ -135,8 +128,10 @@
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
                 },
-                pagingType: 'first_last_numbers',
                 order: [[0, 'desc']],
+                paging: false,
+                scrollCollapse: true,
+                scrollY: '750px',
             });
 
             $('.alert').addClass("show");
@@ -145,13 +140,7 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
-
-            
+            },3500)
         })
 
     </script>

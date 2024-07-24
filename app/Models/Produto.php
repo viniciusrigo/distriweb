@@ -15,14 +15,8 @@ class Produto extends Model
         "id",
         "nome",
         "categoria_id",
-        "quantidade",
+        "variavel_produto_id",
         "sku",
-        "pontos",
-        "preco",
-        "preco_custo",
-        "preco_promocao",
-        "lucro",
-        "desconto",
         "cfop",
         "ncm",
         "codigo_barras",
@@ -34,10 +28,6 @@ class Produto extends Model
         "perc_pis",
         "perc_cofins",
         "perc_ipi",
-        "promocao",
-        "ativo",
-        "validade",
-        "ult_compra",
-        "data_criacao"
+        "ativo"
     ];
 }

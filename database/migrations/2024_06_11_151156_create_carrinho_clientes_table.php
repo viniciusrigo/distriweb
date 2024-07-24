@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('carrinho_clientes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('users_id')->nullable();
-            $table->unsignedBigInteger('produtos_id')->nullable();
-            $table->unsignedBigInteger('qtd')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('produto_id')->nullable();
+            $table->unsignedBigInteger('variavel_produto_id')->nullable();
             $table->datetime('data')->nullable();
 
-            $table->foreign('users_id')->references('id')->on('users');
-            $table->foreign('produtos_id')->references('id')->on('produtos');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('produto_id')->references('id')->on('produtos');
+            $table->foreign('variavel_produto_id')->references('id')->on('variaveis_produtos');
         });
     }
 

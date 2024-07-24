@@ -19,36 +19,55 @@
 <body style="width: 80mm; height: auto">
     <div>
         <div>
-            <div>
-                <span>Padovani Bebidas</span>
-            </div>
-            <div>
-                <span>Rua lateral, 123 - JD Padovani</span>
-            </div>
-            <div>
-                <span>Contato: (43) 93344-5566</span>
-            </div>
-            <div>
-                <span>CNPJ: 12.345.678/0001-10</span>
-            </div>  
-            <div>
-                <span>Venda: Via Internet</span>
-            </div> 
-            <hr>
-            @for ($i = 0; $i < count($pedido['produtos']); $i++)
-                <div>{{ strval($pedido['produtos'][$i]['qtd']."x  |  ".$pedido['produtos'][$i]['nome']) }}</div>
-            @endfor
-            <hr>
-            <div>Destino: {{ $pedido['novo_endereco'] }}</div>
-            <div>Valor: R${{ number_format(($pedido['total'] - $pedido['frete'] ), 2, '.', '') }}</div>
-            <div>Entrega: R${{ $pedido['frete'] }}</div>
-            <div>Total: R${{ $pedido['total']}}</div>
-            <div>Forma Pagamento: {{ $pedido['forma_pagamento'] }}</div>
-            @if ($pedido['dinheiro'] != null)
-                <div>
+            <div class="d-flex row justify-content-center">
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    <span><strong>CNPJ: {{ $info_empresa["cnpj"] }} - {{ $info_empresa["nome_fantasia"] }}</strong></span>
+                </div>
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                <span>{{ $info_empresa["logradouro"] }}, {{ $info_empresa["numero"] }} - {{ $info_empresa["bairro"] }}</span>
+                </div>  
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    <span>Contato: {{ $info_empresa["telefone"] }}</span>
+                </div>  
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    <span>Venda: Via Internet</span>
+                </div>
+                <div style="border-top: 2px dashed black;border-bottom: 2px dashed black; font-size: 13px" class="d-flex justify-content-center col-12">
+                    <table class="col-11">
+                        <thead>
+                            <tr>
+                                <th>QTD</th>
+                                <th>Produto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for ($i = 0; $i < count($pedido['produtos']); $i++)
+                            <tr>
+                                <td>1x</td>
+                                <td>{{ $pedido['produtos'][$i]['nome'] }} {{ $pedido['produtos'][$i]['variavel_nome'] }}</td>
+                            </tr>
+                            @endfor
+                        </tbody>
+                    </table>
+                </div>
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    Destino: {{ $pedido['novo_endereco'] }}
+                </div>
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    Valor: R${{ number_format(($pedido['total'] - $pedido['frete'] ), 2, '.', '') }} - Entrega: R${{ $pedido['frete'] }}
+                </div>
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    Total: R${{ $pedido['total']}}
+                </div>
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
+                    Forma Pagamento: {{ $pedido['forma_pagamento'] }}
+                </div>
+                @if ($pedido['dinheiro'] != null)
+                <div style="font-size: 13px" class="d-flex justify-content-center col-12">
                     + R${{ $pedido["dinheiro"] }} | Troco: R${{ $pedido["troco"] }}
                 </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 </body>

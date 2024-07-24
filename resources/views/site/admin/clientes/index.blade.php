@@ -8,19 +8,8 @@
 
 @section('css')
     <style>
-        ::-webkit-scrollbar{
-            width: 7px;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 30px;
-            background-color: #cccccc;
-        }
-        ::-webkit-scrollbar-thumb:hover{
-            border-radius: 30px;
-            background-color: #a6a6a6;
-        }
+        
     </style> 
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
 @stop
 
 @section('content')
@@ -51,7 +40,7 @@
                                                     <td style="text-align:left">{{ $cliente['pontos'] }}</td>
                                                     <td>{{ $cliente['logradouro'] }}</td>
                                                     <td>{{ $cliente['bairro'] }}</td>
-                                                    <td>{{ $cliente['zona'] }}</td>
+                                                    <td>{{ $cliente['zona_id'] }}</td>
                                                 </tr>
                                             @endforeach
                                         @endisset
@@ -78,9 +67,15 @@
 
 @section('js')
     <script>
-        
-
         $(document).ready(function(){
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
+
             new DataTable('#tabela_clientes', {
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
@@ -95,11 +90,7 @@
             setTimeout(function(){
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
-            },5000);
-            $('.close-btn').click(function(){
-                $('.alert').removeClass("show");
-                $('.alert').addClass("hide");
-            });
+            },3500);
         })
     </script>
 @stop

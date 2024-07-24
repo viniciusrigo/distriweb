@@ -13,8 +13,10 @@ class CarrinhoVenda extends Model
 
     protected $fillable = [
         "id",
-        "vendas_id",
-        "produtos_id",
+        "local_id",
+        "venda_id",
+        "produto_id",
+        "variavel_produto_id",
         "data_adicao"
     ];
 }

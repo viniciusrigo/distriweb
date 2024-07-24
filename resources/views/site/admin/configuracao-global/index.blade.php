@@ -7,44 +7,12 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('css/alert.css') }}">
     <style>
-        ::-webkit-scrollbar{
-            width: 7px;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 30px;
-            background-color: #cccccc;
-        }
-        ::-webkit-scrollbar-thumb:hover{
-            border-radius: 30px;
-            background-color: #a6a6a6;
-        }
+
     </style> 
 @stop
 
 @section('content')
-
-    {{-- POP UPs --}}
-    @if (session('error')) 
-    <div style="background: #ff9b9b; border-left: 8px solid #ff0202;" class="alert hide">
-        <span style="color: #ce0000;" class="fas fa-solid fa-xmark"></span>
-        <span style="color: #ce0000;" class="msg">{{ session('error') }}</span>
-    </div>
-    @endif
-    @if (session('alerta'))
-    <div style="background: #ffdb9b; border-left: 8px solid #ffa502;" class="alert hide">
-        <span style="color: #ce8500;" class="fas fa-exclamation-circle"></span>
-        <span style="color: #ce8500;" class="msg">{{ session('alerta') }}</span>
-    </div>
-    @endif
-    @if (session('success'))
-    <div style="background: #9bd47a; border-left: 8px solid #2b771c;" class="alert hide">
-        <span style="color: #ffffff;" class="fas fa-solid fa-circle-check"></span>
-        <span style="color: #ffffff;" class="msg">{{ session('success') }}</span>
-    </div>
-    @endif
-
     <div class="modal fade" id="novo-banco" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -317,90 +285,103 @@
         </div>
         
         <div class="card-body">
-            <form class="form-row" action="{{ route('admin.configuracao-global.store') }}" method="POST">
+            @if ($info_empresa["atualizar"] == true)
+            <form class="form-row" action="{{ route('admin.configuracao-global.update-info-empresa') }}" method="POST">
+            @else    
+                <form class="form-row" action="{{ route('admin.configuracao-global.info-empresa') }}" method="POST">
+            @endif
+            
                 @csrf
+                @if ($info_empresa["atualizar"] == true)
+                    @method('PUT')
+                @endif
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="nome" style="margin: 0px;">CNPJ<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" required>
+                    <label for="cnpj" style="margin: 0px;">CNPJ<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cnpj" name="cnpj" value="{{ isset($info_empresa["cnpj"]) ? $info_empresa["cnpj"] : "" }}" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="promocao" style="margin: 0px;">Tipo de Tributação</label>
-                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="promocao" name="promocao">
+                    <label for="tipo_tributacao" style="margin: 0px;">Tipo de Tributação</label>
+                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="tipo_tributacao" name="tipo_tributacao" disabled>
+                        <option value=""></option>
                         <option value="1">Lucro Real</option>
                         <option value="2">Lucro Presumido</option>
                         <option value="3">Simples Nacional</option>
                     </select>
                 </div>
                 <div class="form-group col-md-4" style="padding: 3px;">
-                    <label for="preco" style="margin: 0px;">Razão Social<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco" name="preco" required>
+                    <label for="razao_social" style="margin: 0px;">Razão Social<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="razao_social" name="razao_social" value="{{ isset($info_empresa["razao_social"]) ? $info_empresa["razao_social"] : "" }}" required>
                 </div>
                 <div class="form-group col-md-4" style="padding: 3px;">
-                    <label for="preco_custo" style="margin: 0px;">Nome Fantasia<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_custo" name="preco_custo" required>
+                    <label for="nome_fantasia" style="margin: 0px;">Nome Fantasia<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome_fantasia" name="nome_fantasia" value="{{ isset($info_empresa["nome_fantasia"]) ? $info_empresa["nome_fantasia"] : "" }}" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="preco_promocao" style="margin: 0px;">Inscrição Estadual</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_promocao" name="preco_promocao">
+                    <label for="ie" style="margin: 0px;">Inscrição Estadual</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="ie" name="ie" value="{{ isset($info_empresa["ie"]) ? $info_empresa["ie"] : "" }}">
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="quantidade" style="margin: 0px;">Telefone<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" required>
+                    <label for="telefone" style="margin: 0px;">Telefone<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="telefone" name="telefone" value="{{ isset($info_empresa["telefone"]) ? $info_empresa["telefone"] : "" }}" required>
+                </div>
+                <div class="form-group col-md-2" style="padding: 3px;">
+                    <label for="codigo_interno" style="margin: 0px;">Código Interno Entrega<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_interno" name="codigo_interno" value="{{ isset($info_empresa["codigo_interno"]) ? $info_empresa["codigo_interno"] : "" }}" maxlength="10" required>
                 </div>
                 <div class="form-group col-md-12"><strong style="color: #007BFF;">Endereço</strong></div>
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="sku" style="margin: 0px;">CEP</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku">
+                    <label for="cep" style="margin: 0px;">CEP<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cep" name="cep"  value="{{ isset($info_empresa["cep"]) ? $info_empresa["cep"] : "" }}" required>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
-                    <label for="pontos" style="margin: 0px;">Logradouro</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="pontos" name="pontos">
+                    <label for="logradouro" style="margin: 0px;">Logradouro</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="logradouro" name="logradouro" value="{{ isset($info_empresa["logradouro"]) ? $info_empresa["logradouro"] : "" }}" readonly>
                 </div>
                 
                 <div class="form-group col-md-1" style="padding: 3px;">
-                    <label for="cfop" style="margin: 0px;">Número</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cfop" name="cfop">
+                    <label for="numero" style="margin: 0px;">Número<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="numero" name="numero" value="{{ isset($info_empresa["numero"]) ? $info_empresa["numero"] : "" }}" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="ncm" style="margin: 0px;">Complemento</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="ncm" name="ncm">
+                    <label for="complemento" style="margin: 0px;">Complemento</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="complemento" name="complemento" value="{{ isset($info_empresa["complemento"]) ? $info_empresa["complemento"] : "" }}">
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
-                    <label for="cst_csosn" style="margin: 0px;">Bairro</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cst_csosn" name="cst_csosn">
+                    <label for="bairro" style="margin: 0px;">Bairro</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="bairro" name="bairro" value="{{ isset($info_empresa["bairro"]) ? $info_empresa["bairro"] : "" }}" readonly>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
-                    <label for="cst_pis" style="margin: 0px;">Cidade</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cst_pis" name="cst_pis">
+                    <label for="localidade" style="margin: 0px;">Cidade</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="localidade" name="localidade" value="{{ isset($info_empresa["localidade"]) ? $info_empresa["localidade"] : "" }}" readonly>
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
-                    <label for="cst_cofins" style="margin: 0px;">UF</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cst_cofins" name="cst_cofins">
+                    <label for="uf" style="margin: 0px;">UF</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="uf" name="uf" value="{{ isset($info_empresa["uf"]) ? $info_empresa["uf"] : "" }}" readonly>
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
-                    <label for="cst_ipi" style="margin: 0px;">IBGE</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cst_ipi" name="cst_ipi">
+                    <label for="ibge" style="margin: 0px;">IBGE</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="ibge" name="ibge" value="{{ isset($info_empresa["ibge"]) ? $info_empresa["ibge"] : "" }}" readonly>
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
-                    <label for="perc_icms" style="margin: 0px;">DDD</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_icms" name="perc_icms">
+                    <label for="ddd" style="margin: 0px;">DDD</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="ddd" name="ddd" value="{{ isset($info_empresa["ddd"]) ? $info_empresa["ddd"] : "" }}" readonly>
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
-                    <label for="perc_pis" style="margin: 0px;">SIAFI</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_pis" name="perc_pis">
+                    <label for="siafi" style="margin: 0px;">SIAFI</label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="siafi" name="siafi" value="{{ isset($info_empresa["siafi"]) ? $info_empresa["siafi"] : "" }}" readonly>
                 </div>
                 <div class="form-group col-md-12"><strong style="color: #007BFF;">Emissão</strong></div>
                 <div class="form-group col-md-4" style="padding: 3px;">
                     <label for="perc_cofins" style="margin: 0px;">CSC</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_cofins" name="perc_cofins">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_cofins" name="perc_cofins" disabled>
                 </div>
                 <div class="form-group col-md-4" style="padding: 3px;">
                     <label for="perc_ipi" style="margin: 0px;">CSC ID</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_ipi" name="perc_ipi">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="perc_ipi" name="perc_ipi" disabled>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="ult_compra" style="margin: 0px;">Ambiente</label>
-                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="promocao" name="promocao">
+                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="promocao" name="promocao" disabled>
                         <option value="1">Homologação</option>
                         <option value="2">Produção</option>
                     </select>
@@ -410,34 +391,34 @@
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número de série<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número da última NFe(Produção)<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número da última NFe(Homologação)<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-12">
                     NFCe
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número de série<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número da última NFCe(Produção)<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número da última NFCe(Homologação)<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="promocao" style="margin: 0px;">Nat. de Oper. para PDV</label>
-                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="promocao" name="promocao">
+                    <select style="margin: 0px;" class="custom-select form-control-border border-width-2" id="promocao" name="promocao" disabled>
                         <option value="1">Venda</option>
                     </select>
                 </div>
@@ -446,45 +427,69 @@
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número de série<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número da última CTe(Produção)<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Número da última CTe(Homologação)<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
                 <div class="form-group col-md-12"><strong style="color: #007BFF;">Certificado A1</strong></div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label>Certificado A1</label>
-                    <input type="file" class="form-control-file" name="" id="">
+                    <input type="file" class="form-control-file" name="" id="" disabled>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="data_cadastro" style="margin: 0px;">Senha<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="data_cadastro" name="data_cadastro" disabled>
                 </div>
-                <div class="d-flex form-group col-md-12">
-                    <button style="margin-left: auto;" class="btn btn-success" type="submit">Cadastrar</button>
-                </div>
-            </form>
+                @if ($info_empresa["atualizar"] == true)
+                    <div class="d-flex form-group col-md-12">
+                        <button style="margin-left: auto;" class="btn btn-success" type="submit">Atualizar</button>
+                    </div>
+                @else    
+                    <div class="d-flex form-group col-md-12">
+                        <button style="margin-left: auto;" class="btn btn-success" type="submit">Cadastrar</button>
+                    </div>
+                @endif
+                </form>
         </div> 
     </div>
 @stop
 
 @section('js')
     <script>
-        $('.alert').addClass("show");
-        $('.alert').removeClass("hide");
-        $('.alert').addClass("showAlert");
-        setTimeout(function(){
-            $('.alert').removeClass("show");
-            $('.alert').addClass("hide");
-        },5000);
-        $('.close-btn').click(function(){
-            $('.alert').removeClass("show");
-            $('.alert').addClass("hide");
-        });
+        $(document).ready(function(){
+            var _token = $('meta[name="_token"]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': _token
+                }
+            });
+            $('.alert').addClass("show");
+            $('.alert').removeClass("hide");
+            $('.alert').addClass("showAlert");
+            setTimeout(function(){
+                $('.alert').removeClass("show");
+                $('.alert').addClass("hide");
+            },3500);
+        })
+
+        $('#cep').on('blur', function() {
+            var busca = this.value;
+            $.get('https://viacep.com.br/ws/'+busca+'/json/', function (dados){
+                $('#logradouro').val(dados.logradouro)
+                $('#bairro').val(dados.bairro)
+                $('#localidade').val(dados.localidade)
+                $('#uf').val(dados.uf)
+                $('#ibge').val(dados.ibge)
+                $('#ddd').val(dados.ddd)
+                $('#siafi').val(dados.siafi)
+            })  
+        })
     </script>
 @endsection
