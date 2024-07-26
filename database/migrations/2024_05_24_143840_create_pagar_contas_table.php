@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('fornecedor_id')->nullable(false);
             $table->unsignedBigInteger('banco_id')->nullable(false);
             $table->date('vencimento')->nullable(false);
-            $table->decimal('valor',8,2)->nullable(false);
+            $table->float('valor',8,2)->nullable(false);
             $table->enum('status', ['a','p'])->default('a');
             $table->datetime('data_pagamento')->nullable();
             $table->date('data_criacao');

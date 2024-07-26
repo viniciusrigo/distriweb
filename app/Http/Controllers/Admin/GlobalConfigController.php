@@ -9,6 +9,7 @@ use App\Models\FormaPagamento;
 use App\Models\GlobalConfig;
 use App\Models\LocalVenda;
 use App\Models\TipoConta;
+use App\Models\Zona;
 use Exception;
 
 class GlobalConfigController extends Controller
@@ -40,7 +41,9 @@ class GlobalConfigController extends Controller
             }
         }
 
-        return view("site/admin/configuracao-global/index", compact("bancos", "forma_pagamentos", "tipo_contas", "locais", "info_empresa"));
+        $zonas = Zona::all();
+
+        return view("site/admin/configuracao-global/index", compact("bancos", "forma_pagamentos", "tipo_contas", "locais", "info_empresa", "zonas"));
     }
 
     public function store(Request $request){
@@ -139,6 +142,40 @@ class GlobalConfigController extends Controller
             $empresa->update($dados_request);
 
             $success = "Informações atualizadas com sucesso";
+            session()->flash("success", $success);
+
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->with("error", $e->getMessage());
+        }
+    }
+
+    public function update_taxa(Request $request){
+        try{
+            $dados_request = $request->except("_token");
+            $dados_request["nova_taxa"] = str_replace(",", ".", $dados_request["nova_taxa"]);
+
+            $forma_pagamento = FormaPagamento::find($dados_request["forma_pagamento_id"]);
+            $forma_pagamento->taxa = $dados_request["nova_taxa"];
+            $forma_pagamento->save();            
+
+            $success = "Taxa atualizada com sucesso";
+            session()->flash("success", $success);
+
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->with("error", $e->getMessage());
+        }
+    }
+
+    public function update_zona(Request $request){
+        try{
+            $dados_request = $request->except("_token");
+            $dados_request["nova_entrega"] = str_replace(",", ".", $dados_request["nova_entrega"]);
+            
+            $zona = Zona::find($dados_request["zona_id"])->update(["entrega" => $dados_request["nova_entrega"], "tempo_entrega" => $dados_request["novo_tempo_entrega"]]);         
+
+            $success = "Zona atualizada com sucesso";
             session()->flash("success", $success);
 
             return redirect()->back();

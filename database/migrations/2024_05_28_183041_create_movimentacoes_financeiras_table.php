@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('local_id');
             $table->string('cliente_fornecedor', 30);
-            $table->decimal('valor', 8, 2);
-            $table->decimal('lucro', 8, 2)->nullable();
+            $table->float('valor', 8, 2);
+            $table->float('lucro', 8, 2)->nullable();
             $table->unsignedBigInteger('forma_pagamento_id')->nullable();
             $table->enum('tipo', ['e', 's']);
             $table->datetime('data');

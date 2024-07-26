@@ -25,7 +25,7 @@
                         <div id="div_codigo" class="row justify-content-center">
                             <div class="m-1">
                                 <label for="codigo_barras" style="margin: 0px;">Código de Barras<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" value="{{ session('codigo_barras') }}" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" value="{{ session('codigo_barras') }}" required>
                             </div>
                             @if (session('divs'))
                                 {!! session('divs') !!}

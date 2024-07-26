@@ -50,7 +50,7 @@ Route::get('/', function () {
     } else {
         $produtos_desconto = VariaveisProduto::where('promocao', 's')->where('pontos', 0)
         ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
-        ->select("produtos.*", "variaveis_produtos.*")
+        ->select("produtos.nome", "variaveis_produtos.*")
         ->orderBy('nome', 'asc')->get()->toArray();
 
         $produtos_fidelidade = VariaveisProduto::where('promocao', "!=", 's')->where('pontos', ">", 0)
@@ -106,6 +106,8 @@ Route::prefix('/admin')->group(function () {
     Route::post('/configuracao-global/novo-tipo-conta', [GlobalConfigController::class, 'new_account_type'])->name('admin.configuracao-global.novo-tipo-conta')->middleware('can:acesso_config_global');
     Route::post('/configuracao-global/info-empresa', [GlobalConfigController::class, 'info_company'])->name('admin.configuracao-global.info-empresa')->middleware('can:acesso_config_global');
     Route::put('/configuracao-global/update-info-empresa', [GlobalConfigController::class, 'update_info_company'])->name('admin.configuracao-global.update-info-empresa')->middleware('can:acesso_config_global');
+    Route::put('/configuracao-global/update-taxa', [GlobalConfigController::class, 'update_taxa'])->name('admin.configuracao-global.update-taxa')->middleware('can:acesso_config_global');
+    Route::put('/configuracao-global/update-zona', [GlobalConfigController::class, 'update_zona'])->name('admin.configuracao-global.update-zona')->middleware('can:acesso_config_global');
 
     Route::get('/clientes', [ClienteController::class, 'page_index'])->name('admin.clientes.index')->middleware('can:acesso_clientes');
 

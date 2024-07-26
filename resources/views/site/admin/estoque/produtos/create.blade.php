@@ -83,11 +83,11 @@
                 @csrf
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="nome" style="margin: 0px;">Nome Produto<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" autofocus required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" maxlength="40" autofocus required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="sku" style="margin: 0px;">SKU</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku" maxlength="25">
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="categoria_id" style="margin: 0px;">Categoria<code>*</code></label>
@@ -111,35 +111,35 @@
                     <div class="principal d-flex col-md-12">
                         <div class="form-group col-md-2" style="padding: 3px;">
                             <label for="variavel_nome" style="margin: 0px;">Variável Nome</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome[]">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome[]" maxlength="50">
                         </div>
                         <div class="form-group col-md-2" style="padding: 3px;">
                             <label for="codigo_barras" style="margin: 0px;">Código de Barras</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="codigo_barras[]">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="codigo_barras[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13">
                         </div>
                         <div class="div-qtd form-group col-md-1" style="padding: 3px;">
                             <label for="variavel_quantidade" style="margin: 0px;">QTD<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_quantidade[]">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_quantidade[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="4">
                         </div>
                         <div class="d-none div-fardo form-group col-md-1" style="padding: 3px;">
                             <label for="fardo_quantidade" style="margin: 0px;">QTD no Fardo</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="fardo_quantidade[]">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="fardo_quantidade[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="4">
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco[]" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="preco_custo" style="margin: 0px;">Preço Custo<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo[]" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="preco_promocao" style="margin: 0px;">Preço Promoção</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_promocao[]">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_promocao[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7">
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="pontos" style="margin: 0px;">Pontos</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="pontos[]">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="pontos[]" maxlength="4">
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="validade" style="margin: 0px;">Validade<code>*</code></label>

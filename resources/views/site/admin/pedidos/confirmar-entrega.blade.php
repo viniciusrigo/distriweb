@@ -14,7 +14,7 @@
         <link rel="icon" href="{{ asset('dw.png') }}">
 
         {{-- Title --}}
-        <title>Padovani Bebidas - Loja</title>
+        <title>Confirmar Entrega</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -61,9 +61,9 @@
                 </div>
                 <div style="font-family: 'Ubuntu', sans-serif; color: #888888;" class="d-flex flex-wrap justify-content-center col-md-10 p-3">
                     <form id="confirma-entrega" class="d-flex flex-wrap" action="{{ route('confirmar-entrega') }}" method="GET">
-                        <input class="form-control col-md-4 col-12 m-1" type="text" name="codigo_interno" placeholder="Código Interno" required>
-                        <input class="form-control col-md-3 col-12 m-1" type="text" name="pedido_id" placeholder="Nº Pedido" required>
-                        <input class="form-control col-md-4 col-12 m-1" type="text" name="codigo" placeholder="Código Pedido" required>
+                        <input class="form-control col-md-4 col-12 m-1" type="text" name="codigo_interno" placeholder="Código Interno" maxlength="4" required>
+                        <input class="form-control col-md-3 col-12 m-1" type="text" name="pedido_id" placeholder="Nº Pedido" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" required>
+                        <input class="form-control col-md-4 col-12 m-1" type="text" name="codigo" placeholder="Código Pedido" maxlength="4" required>
                     </form>
                     <button form="confirma-entrega" type="submit" class="btn btn-danger rounded-pill m-1">Confirmar</button>
                 </div>

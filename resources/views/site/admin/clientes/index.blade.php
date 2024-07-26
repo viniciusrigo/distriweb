@@ -40,7 +40,7 @@
                                                     <td style="text-align:left">{{ $cliente['pontos'] }}</td>
                                                     <td>{{ $cliente['logradouro'] }}</td>
                                                     <td>{{ $cliente['bairro'] }}</td>
-                                                    <td>{{ $cliente['zona_id'] }}</td>
+                                                    <td>{{ $cliente['zona'] }}</td>
                                                 </tr>
                                             @endforeach
                                         @endisset

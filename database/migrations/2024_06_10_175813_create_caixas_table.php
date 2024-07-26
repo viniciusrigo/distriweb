@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('caixas', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->decimal('valor_inicial', 10, 2)->nullable();
-            $table->decimal('valor_final', 10, 2)->nullable();
-            $table->decimal('valor_retirada', 10, 2)->nullable();
+            $table->float('valor_inicial', 10, 2)->nullable();
+            $table->float('valor_final', 10, 2)->nullable();
+            $table->float('valor_retirada', 10, 2)->nullable();
             $table->enum('status', ['a','f'])->default('a');
             $table->datetime('data_abertura')->nullable();
             $table->datetime('data_fechamento')->nullable();

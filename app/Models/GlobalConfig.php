@@ -19,6 +19,7 @@ class GlobalConfig extends Model
         "ie",
         "telefone",
         "codigo_interno",
+        "minimo_produto",
         "cep",
         "logradouro",
         "numero",

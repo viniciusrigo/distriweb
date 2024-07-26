@@ -22,19 +22,19 @@
                         @csrf
                         <div class="form-group col-md-3" style="padding: 3px;">
                             <label for="cnpj" style="margin: 0px;">CNPJ / CPF<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cnpj" name="cnpj" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cnpj" name="cnpj" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="14" required>
                         </div>
                         <div class="form-group col-md-3" style="padding: 3px;">
                             <label for="nome" style="margin: 0px;">Nome<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" maxlength="100">
                         </div>
                         <div class="form-group col-md-3" style="padding: 3px;">
                             <label for="fantasia" style="margin: 0px;">Fantasia</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="fantasia" name="fantasia">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="fantasia" name="fantasia" maxlength="50">
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="cep" style="margin: 0px;">CEP</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cep" name="cep">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cep" name="cep" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="8">
                         </div>
                         <div class="form-group col-md-3" style="padding: 3px;">
                             <label for="logradouro" style="margin: 0px;">Logradouro</label>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="numero" style="margin: 0px;">Nº</label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="numero" name="numero">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="numero" name="numero" maxlength="6">
                         </div>
                         <div class="form-group col-md-2" style="padding: 3px;">
                             <label for="municipio" style="margin: 0px;">Município</label>

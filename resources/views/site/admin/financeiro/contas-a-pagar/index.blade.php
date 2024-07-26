@@ -55,7 +55,7 @@
                             </div>
                             <div class="m-1" style="width: 65px">
                                 <label for="valor" style="margin: 0px;">Valor<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="valor" name="valor" placeholder="R$" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="valor" name="valor" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </div>
                             <div class="m-1 col-2">
                                 <label for="status" style="margin: 0px;">Status<code>*</code></label>

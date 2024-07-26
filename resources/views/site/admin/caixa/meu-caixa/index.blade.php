@@ -86,7 +86,7 @@
                     <input type="hidden" name="status" value="f">
                     <input type="hidden" name="saldo_atual" value="{{ $banco->saldo }}">
                     <div class="card table-responsive p-0">
-                        <input type="text" name="valor_retirada" class="form-control col-md-3 ml-auto mr-auto" placeholder="Digite valor de retirada" required>
+                        <input type="text" name="valor_retirada" class="form-control col-md-3 ml-auto mr-auto" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44"  maxlength="7" placeholder="Digite valor de retirada" required>
                         <button type="submit" class="btn btn-danger">
                             <i class="fa-solid fa-box-open"></i>
                             FECHAR CAIXA

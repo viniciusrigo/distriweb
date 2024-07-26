@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string("nome_fantasia", 50)->nullable(false);
             $table->string("ie", 20)->nullable();
             $table->string("telefone", 11)->nullable(false);
-            $table->string("codigo_interno", 10)->nullable(false);
+            $table->string("codigo_interno", 4)->nullable(false);
+            $table->integer("minimo_produto")->nullable(false);
             $table->string("cep", 8)->nullable(false);
             $table->string("logradouro", 50)->nullable(false);
             $table->string("numero", 5)->nullable(false);

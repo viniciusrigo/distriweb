@@ -28,7 +28,7 @@ class CaixaController extends Controller
             return view("site/admin/caixa/meu-caixa/index", compact("caixa_aberto", "fluxo", 'banco', 'caixas'));
         }
 
-        $caixas = Caixa::where('status', 'f')->get();
+        $caixas = Caixa::where('status', 'f')->take(50)->get();
 
         $ult_caixa = Caixa::where('status', 'f')->orderBy('id', 'desc')->first();
         

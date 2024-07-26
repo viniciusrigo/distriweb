@@ -43,7 +43,9 @@ class PedidoController extends Controller
             "pedidos.data",
             "pedidos.status",
             "forma_pagamentos.nome as forma_pagamento"
-        )->get()->toArray();
+        )->orderBy("data", "DESC")
+        ->get()
+        ->toArray();
 
         for($i= 0; $i < count($pedidos); $i++){
             $variaveis = ProdutosPedido::where("pedido_id",$pedidos[$i]["id"])
@@ -99,7 +101,7 @@ class PedidoController extends Controller
 
                     /* NOVO FLUXO */
                     $fluxo_caixa = new FluxoCaixa();
-                    $fluxo_caixa->caixas_id = $caixa->id;
+                    $fluxo_caixa->caixa_id = $caixa->id;
                     $fluxo_caixa->venda = $pedido->total;
                     $fluxo_caixa->dinheiro = $pedido->dinheiro;
                     $fluxo_caixa->troco = $pedido->dinheiro - $pedido->total;

@@ -107,7 +107,7 @@
                                         @isset($mais_vendidos_pdv)
                                             @foreach ($mais_vendidos_pdv as $produto)    
                                                 <tr class="tb-tr-bd">
-                                                    <td  style="text-align:left">{{ $produto["nome"] }}</td>
+                                                    <td  style="text-align:left">{{ $produto["nome"] }} {{ $produto["variavel_nome"] }}</td>
                                                     <td  style="text-align:left">{{ $produto["total"] }}</td>
                                                 </tr>
                                             @endforeach
@@ -144,7 +144,7 @@
                                         @isset($mais_vendidos_comandas)
                                             @foreach ($mais_vendidos_comandas as $produto)    
                                                 <tr class="tb-tr-bd">
-                                                    <td  style="text-align:left">{{ $produto["nome"] }}</td>
+                                                    <td  style="text-align:left">{{ $produto["nome"] }} {{ $produto["variavel_nome"] }}</td>
                                                     <td  style="text-align:left">{{ $produto["total"] }}</td>
                                                 </tr>
                                             @endforeach
@@ -181,7 +181,7 @@
                                         @isset($mais_vendidos_pedidos)
                                             @foreach ($mais_vendidos_pedidos as $produto)    
                                                 <tr class="tb-tr-bd">
-                                                    <td  style="text-align:left">{{ $produto["nome"] }}</td>
+                                                    <td  style="text-align:left">{{ $produto["nome"] }} {{ $produto["variavel_nome"] }}</td>
                                                     <td  style="text-align:left">{{ $produto["total"] }}</td>
                                                 </tr>
                                             @endforeach
@@ -245,7 +245,7 @@
             <div class="col-md-3 m-1">
                 <div style="height: 350px; overflow:auto;" class="card table-responsive p-0">  
                     <div class="card-header">
-                        <strong>Produtos próximo do vencimento</strong>
+                        <strong style="color: red">Vencimento Próximo</strong>
                     </div>      
                     <div class="card-body p-2">    
                         <div class="row">
@@ -262,9 +262,9 @@
                                         @isset($produtos_vencimento)
                                             @foreach ($produtos_vencimento as $produto)    
                                                 <tr class="tb-tr-bd">
-                                                    <td  style="text-align:left">{{ $produto["nome"] }} {{ $produto["variavel_nome"] }}</td>
-                                                    <td  style="text-align:left">{{ $produto["variavel_quantidade"] }}</td>
-                                                    <td  style="text-align:left">{{ date("d/m/Y", strtotime($produto["validade"])) }}</td>
+                                                    <td style="text-align:left">{{ $produto["nome"] }} {{ $produto["variavel_nome"] }}</td>
+                                                    <td style="text-align:left">{{ $produto["variavel_quantidade"] }}</td>
+                                                    <td style="text-align:left; color: red">{{ date("d/m/Y", strtotime($produto["validade"])) }}</td>
                                                 </tr>
                                             @endforeach
                                         @endisset
@@ -282,6 +282,45 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-3 m-1">
+                <div style="height: 350px; overflow:auto;" class="card table-responsive p-0">  
+                    <div class="card-header">
+                        <strong style="color: red">Estoque Baixo</strong>
+                    </div>      
+                    <div class="card-body p-2">    
+                        <div class="row">
+                            <div class="col-12">
+                                <table id="tabela_estoque" class="table table-sm table-hover table-striped compact">
+                                    <thead class="bg-white" style="position: sticky; top: 0;">
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Estoque</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @isset($produtos_estoque_baixo)
+                                            @foreach ($produtos_estoque_baixo as $produto)    
+                                                <tr class="tb-tr-bd">
+                                                    <td style="text-align:left">{{ $produto["nome"] }} {{ $produto["variavel_nome"] }}</td>
+                                                    <td style="text-align:left; color: red;">{{ $produto["variavel_quantidade"] }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endisset
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>      
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center col-12">
             <div class="col-md-3 m-1">
                 <div style="height: 350px; overflow:auto;" class="card table-responsive p-0">  
                     <div class="card-header">

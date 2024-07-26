@@ -95,11 +95,11 @@
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="quantidade" style="margin: 0px;">QTD<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="4" required>
                         </div>
                         <div class="form-group col-md-3" style="padding: 3px;">
                             <label for="observacao" style="margin: 0px;">Observação<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="observacao" name="observacao" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="observacao" name="observacao" maxlength="100" required>
                         </div>
                         <div class="d-flex justify-content-center form-group col-12" style="padding: 3px;">
                             <button type="submit" class="btn btn-success" autofocus></i>&nbsp;&nbsp;&nbsp;<strong>Salvar</strong></button>

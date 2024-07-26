@@ -83,11 +83,11 @@
                 @csrf
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="nome" style="margin: 0px;">Nome Combo<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" autofocus required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" maxlength="40" autofocus required>
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
                     <label for="sku" style="margin: 0px;">SKU</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku" maxlength="25">
                 </div>
                 <div class="form-group col-md-1" style="padding: 3px;">
                     <label for="categoria_id" style="margin: 0px;">Categoria<code>*</code></label>
@@ -100,15 +100,15 @@
                 <div class="d-flex justify-content-center col-md-12">
                     <div class="form-group col-md-2" style="padding: 3px;">
                         <label for="variavel_nome" style="margin: 0px;">Variável Nome</label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome">
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome" maxlength="50">
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco" required>
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="preco_custo" style="margin: 0px;">Preço Custo<code>*</code></label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo" required>
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                     </div>
                 </div>
                 <div class="top col-md-12">
@@ -123,7 +123,7 @@
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label style="margin: 0px;">Quantidade<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="combo_quantidade[]" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="combo_quantidade[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="4" required>
                         </div>
                     </div>
                 </div>

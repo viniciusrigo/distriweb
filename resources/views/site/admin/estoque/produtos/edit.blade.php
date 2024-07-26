@@ -35,11 +35,11 @@
                     <input type="hidden" name="produto_id" value="{{ $produto->id }}">
                     <div class="form-group col-md-2" style="padding: 3px;">
                         <label for="nome" style="margin: 0px;">Nome Produto<code>*</code></label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" value="{{ $produto->nome }}" required>
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" value="{{ $produto->nome }}" maxlength="40" required>
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="sku" style="margin: 0px;">SKU</label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku" value="{{ $produto->sku }}">
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="sku" name="sku" value="{{ $produto->sku }}" maxlength="25">
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="categoria_id" style="margin: 0px;">Categoria<code>*</code></label>
@@ -166,7 +166,7 @@
                     <input type="hidden" name="produto_id" value="{{ $produto->id }}">
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="variavel_nome" style="margin: 0px;">Variável Nome</label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome[]">
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome[]" maxlength="50">
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="codigo_barras" style="margin: 0px;">Cód. de Barras</label>
@@ -174,29 +174,29 @@
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="variavel_quantidade" style="margin: 0px;">QTD<code>*</code></label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_quantidade[]" required>
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_quantidade[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="4" required>
                     </div>
                     @if ($produto->categoria_id == 6)
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label for="fardo_quantidade" style="margin: 0px;">Qtd no Fardo<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="fardo_quantidade[]" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="fardo_quantidade[]" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="4" required>
                         </div>
                     @endif
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco[]" placeholder="R$" required>
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco[]" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="preco_custo" style="margin: 0px;">Custo<code>*</code></label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo[]" placeholder="R$" required>
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo[]" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="preco_promocao" style="margin: 0px;">Promoção</label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_promocao[]" placeholder="R$">
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_promocao[]" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7">
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="pontos" style="margin: 0px;">Pontos</label>
-                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="pontos[]">
+                        <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="pontos[]" maxlength="4">
                     </div>
                     <div class="form-group col-md-1" style="padding: 3px;">
                         <label for="validade" style="margin: 0px;">Validade<code>*</code></label>
@@ -221,21 +221,21 @@
                         <input type="hidden" name="preco_custo" value="{{ $variavel->preco_custo }}">
                         <div class="form-group col-md-2" style="padding: 3px;">
                             <label style="margin: 0px;">Nome Variável<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome" value="{{ $variavel->variavel_nome }}">
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="variavel_nome" value="{{ $variavel->variavel_nome }}" maxlength="50">
                         </div>
                         <div class="form-group col-md-1" style="padding: 3px;">
                             <label style="margin: 0px;">Preço<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco" value="{{ $variavel->preco }}" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco" value="{{ $variavel->preco }}"  onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                         </div>
                         @if ($produto->categoria_id != 5)
                             <div class="form-group col-md-1" style="padding: 3px;">
                                 <label style="margin: 0px;">Promoção<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_promocao" value="{{ $variavel->preco_promocao }}" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_promocao" value="{{ $variavel->preco_promocao }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </div>
                         @else
                             <div class="form-group col-md-1" style="padding: 3px;">
                                 <label style="margin: 0px;">Custo<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo" value="{{ $variavel->preco_custo }}" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="preco_custo" value="{{ $variavel->preco_custo }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </div>
                         @endif
                         <div class="form-group col-md-2">
@@ -267,7 +267,7 @@
                                 </div>
                                 <div class="form-group col-md-1" style="padding: 3px;">
                                     <label style="margin: 0px;">Quantidade<code>*</code></label>
-                                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="combo_quantidade[]" value="{{ $cb["combo_quantidade"] }}" required>
+                                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" name="combo_quantidade[]" value="{{ $cb["combo_quantidade"] }}"  onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="4" required>
                                 </div>
                             </div>
                         @endforeach

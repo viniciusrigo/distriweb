@@ -74,7 +74,7 @@
                         @csrf
                         <div class="form-group col-md-5 ml-auto mr-auto" style="padding: 3px;">
                             <label for="nome" style="margin: 0px;">Responsável<code>*</code></label>
-                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" required>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome"  maxlength="25" required>
                         </div>
                         <div class="form-group col-md-12" style="padding: 3px;">
                             <div class="col-md-2 mr-auto ml-auto">
@@ -204,7 +204,7 @@
                                     </div>
                                     <div class="justify-content-center col-12 p-0" id="div-dinheiro" style="padding: 3px;">
                                         <div class="col-5">
-                                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="input-dinheiro" name="dinheiro" placeholder="R$0.00">
+                                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="input-dinheiro" name="dinheiro" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44"  maxlength="7" placeholder="R$0.00">
                                         </div>
                                         <div class="col-5">
                                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="input-troco" name="troco" placeholder="Troco" readonly>
@@ -258,7 +258,7 @@
                                                     <td style="text-align:left">{{ $fechada->id }}</td>
                                                     <td style="text-align:left">{{ $fechada->nome }}</td>
                                                     <td style="text-align:left">R${{ $fechada->total }}</td>
-                                                    <td><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><i class='fa-brands fa-pix'></i>  <strong>{{$fechada->pagamento_nome}}</strong></span></td> 
+                                                    <td><span style='padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>{{$fechada->pagamento_nome}}</strong></span></td> 
                                                     <td><span style='background-color: #ee9292; color: #5e1b1b; padding: 0px 8px 0px 8px; border-radius: 10px;'><strong>Fechada</strong></span></td>
                                                     <td style="text-align:left">@php echo date("H:i:s d/m/y", strtotime($fechada->data_abertura)) @endphp</td>
                                                     <td style="text-align:left">@php echo date("H:i:s d/m/y", strtotime($fechada->data_fechamento)) @endphp</td>
@@ -319,6 +319,8 @@
                 $('.alert').removeClass("show");
                 $('.alert').addClass("hide");
             },3500)
+
+            document.getElementById("div-dinheiro").style.display = "none";
         })
 
         function imprimir(){
@@ -326,10 +328,10 @@
             let aba = window.open("comandas/imprimir/"+comanda)
             setTimeout(function(){
                 aba.print()
-            }, 0500);
+            }, 0250);
             setTimeout(function(){
                 aba.close()
-            }, 3000);
+            }, 2500);
         }
 
         function calcular() {
@@ -343,19 +345,15 @@
 
         document.getElementById("dinheiro").onclick = function(){
             document.getElementById("div-dinheiro").style.display = "flex";
-            document.getElementById("div-troco").style.display = "flex";
         }
         document.getElementById("pix").onclick = function(){
             document.getElementById("div-dinheiro").style.display = "none";
-            document.getElementById("div-troco").style.display = "none";
         }
         document.getElementById("credito").onclick = function(){
             document.getElementById("div-dinheiro").style.display = "none";
-            document.getElementById("div-troco").style.display = "none";
         }
         document.getElementById("debito").onclick = function(){
             document.getElementById("div-dinheiro").style.display = "none";
-            document.getElementById("div-troco").style.display = "none";
         }
     </script>
 @stop

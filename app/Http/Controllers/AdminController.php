@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FluxoBanco;
+use App\Models\GlobalConfig;
 use App\Models\MovimentacoesFinanceira;
 use App\Models\PagarConta;
 use App\Models\ProdutosComanda;
@@ -59,7 +60,7 @@ class AdminController extends Controller
 
         $mais_vendidos_pdv = ProdutosVenda::join("variaveis_produtos", "produtos_vendas.variavel_produto_id", "=", "variaveis_produtos.id")
         ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
-        ->select("produtos.nome", DB::raw("count(*) as total"))
+        ->select("variaveis_produtos.variavel_nome", "produtos.nome", DB::raw("count(*) as total"))
         ->groupBy("produtos.nome")
         ->orderBy("total", "DESC")
         ->take(20)
@@ -67,7 +68,7 @@ class AdminController extends Controller
 
         $mais_vendidos_comandas = ProdutosComanda::join("produtos", "produtos_comandas.produto_id", "=", "produtos.id")
         ->join("variaveis_produtos", "produtos_comandas.variavel_produto_id", "=", "variaveis_produtos.id")
-        ->select("produtos.nome", DB::raw("count(*) as total"))
+        ->select("variaveis_produtos.variavel_nome", "produtos.nome", DB::raw("count(*) as total"))
         ->groupBy("produtos.nome")
         ->orderBy("total", "DESC")
         ->take(20)
@@ -75,7 +76,7 @@ class AdminController extends Controller
 
         $mais_vendidos_pedidos = ProdutosPedido::join("produtos", "produtos_pedidos.produto_id", "=", "produtos.id")
         ->join("variaveis_produtos", "produtos_pedidos.variavel_produto_id", "=", "variaveis_produtos.id")
-        ->select("produtos.nome", DB::raw("count(*) as total"))
+        ->select("variaveis_produtos.variavel_nome", "produtos.nome", DB::raw("count(*) as total"))
         ->groupBy("produtos.nome")
         ->orderBy("total", "DESC")
         ->take(20)
@@ -84,6 +85,15 @@ class AdminController extends Controller
         $produtos_parados = VariaveisProduto::orderBy("ult_compra", "asc")
         ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
         ->select("produtos.nome", "variaveis_produtos.variavel_nome", "variaveis_produtos.variavel_quantidade", "variaveis_produtos.ult_compra")
+        ->take(20)
+        ->get()
+        ->toArray();
+
+        $global_config = GlobalConfig::get(["minimo_produto"])->first()->toArray();
+
+        $produtos_estoque_baixo = VariaveisProduto::join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select("produtos.nome", "variaveis_produtos.variavel_nome", "variaveis_produtos.variavel_quantidade", "variaveis_produtos.ult_compra")
+        ->where("variavel_quantidade", "<=", $global_config["minimo_produto"])
         ->take(20)
         ->get()
         ->toArray();
@@ -106,7 +116,7 @@ class AdminController extends Controller
             "lucro", "faturamento", "vendas",
             "despesas", "produtos_vencimento", "produtos_parados",
             "mais_vendidos_pdv", "mais_vendidos_comandas", "mais_vendidos_pedidos",
-            "produtos_lucro"
+            "produtos_lucro", "produtos_estoque_baixo"
         ));
     }
 

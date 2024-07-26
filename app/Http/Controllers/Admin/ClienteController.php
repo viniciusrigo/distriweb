@@ -14,7 +14,11 @@ class ClienteController extends Controller
     }
 
     public function page_index() {
-        $clientes = Cliente::where("cliente", "s")->get()->toArray();
+        $clientes = Cliente::where("cliente", "s")->join("zonas", "users.zona_id", "=", "zonas.id")
+        ->select("users.*", "zonas.nome as zona")
+        ->get()
+        ->toArray();
+
         for ($i = 0; $i < count($clientes); $i++) {
             $ddd = substr($clientes[0]["celular"], 0, 2);
             $p1 = substr($clientes[0]["celular"], 2, 5);

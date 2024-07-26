@@ -17,9 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('variavel_produto_id');
             $table->integer('quantidade')->nullable();
             $table->string('codigo_barras', 30)->nullable();
-            $table->decimal('preco', 10, 2)->nullable();
-            $table->decimal('preco_custo', 10, 2)->nullable();
-            $table->decimal('preco_promocao', 10, 2)->nullable();
+            $table->float('preco', 10, 2)->nullable();
+            $table->float('preco_custo', 10, 2)->nullable();
+            $table->float('preco_promocao', 10, 2)->nullable();
             $table->datetime('validade');
             $table->datetime('data_cadastro');
 

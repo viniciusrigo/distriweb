@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'DW - Config. Global')
+@section('title', 'DW - Venda Manual')
 
 @section('content_header')
 
@@ -121,7 +121,7 @@
                 <form id="form-adicional" class="d-flex justify-content-center align-items-center p-2 m-1" action="{{ route('admin.venda-manual.adicional') }}" method="POST">
                     @csrf
                     <input type="hidden" name="venda_id" value="{{ Request::segment(4) }}">
-                    <input style="margin: 0px;height: 2em;font-size: 25px;" class="form-control form-control-border border-width-2 col-8" name="adicional" type="text" placeholder="Valor Adicional R$" required>
+                    <input style="margin: 0px;height: 2em;font-size: 25px;" class="form-control form-control-border border-width-2 col-8" name="adicional" type="text" placeholder="Valor Adicional R$" maxlength="7" required>
                     <button style="margin: 0px;height: 2em;font-size: 25px;" type="button" class="btn btn-success ml-5" data-toggle="modal" data-target="#staticBackdrop">Adicionar</button>
                 </form>
             </div>

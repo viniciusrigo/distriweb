@@ -91,7 +91,7 @@
                                 <div style="position: absolute;" class="d-flex col-12">
                                     <span class="badge badge-danger ml-auto">{{ abs(round((($produto["preco_promocao"]* 100) / $produto["preco"]) - 100, 2)) == "0" ? "" : abs(round((($produto["preco_promocao"]* 100) / $produto["preco"]) - 100, 2))."%" }}</span>
                                 </div>
-                                <img src="{{ file_exists('storage/variaveis_produtos/'.$produto["id"].'.png') ? url('storage/variaveis_produtos/'.$produto["variavel_produto_id"].'.png') : url('storage/produtos/'.$produto["produto_id"].'.png') }}" alt="Card image cap" width="210px" height="210px">
+                                <img src="{{ url('storage/variaveis_produtos/'.$produto["id"].'.png') }}" alt="Card image cap" width="210px" height="210px">
                             </div>
                             <div class="card-body m-0 p-1">
                                 <div style="height: 40px" class="d-flex justify-content-center align-items-center">
@@ -125,7 +125,7 @@
                         @foreach ($produtos_fidelidade as $produto)
                             <div class="d-flex m-1 p-1 justify-content-center" style="width: 20rem; min-width: 20rem; background-color:#f7f7f7; border: none;">
                                 <div class="d-flex justify-content-center align-items-center">
-                                    <img src="{{ file_exists('storage/variaveis_produtos/'.$produto["id"].'.png') ? url('storage/variaveis_produtos/'.$produto["id"].'.png') : url('storage/produtos/'.$produto["produto_id"].'.png') }}" width="120px" height="120px">
+                                    <img src="{{ url('storage/variaveis_produtos/'.$produto["id"].'.png') }}" width="120px" height="120px">
                                 </div>
                                 <div class="m-0 p-1">
                                     <div style="height: 40px" class="d-flex justify-content-center align-items-center">

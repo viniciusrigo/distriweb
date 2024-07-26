@@ -115,8 +115,8 @@
                     <div class="d-flex justify-content-center align-items-center col-md-4 col-12">
                         <div class="d-flex flex-wrap justify-content-center">
                             <img src="{{ asset('desconto.png') }}" alt="" width="150px" height="150px" class="">
-                            <span style="font-size: 2.9rem; font-weight: 500;" class="d-flex justify-content-center col-md-12"><strong>Vamos de Promoção !?</strong></span>
-                            <span style="font-size: 1.8rem; font-weight: 100;" class="d-flex justify-content-center col-md-9"><strong>Aqui seu dinheiro vale mais</strong></span>
+                            <span style="font-size: 2.9rem; font-weight: 500;text-align:center" class="d-flex justify-content-center col-md-12"><strong>Vamos de Promoção !?</strong></span>
+                            <span style="font-size: 1.8rem; font-weight: 100;text-align:center" class="d-flex justify-content-center col-md-9"><strong>Aqui seu dinheiro vale mais</strong></span>
                         </div>
                     </div>
                     <div style="overflow-x: auto;" class="scroll d-flex justify-content-start col-md-5 col-12 p-2">

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nome', 50)->nullable();
             $table->string('agencia', 10)->nullable();
             $table->string('conta', 50)->nullable();
-            $table->decimal('saldo', 11,2)->nullable();
+            $table->float('saldo', 11,2)->nullable();
         });
     }
 

@@ -449,19 +449,19 @@ class EstoqueController extends Controller
                     $codigo_barras = $request->input("codigo_barras");
                     $divs = '<div class="m-1" style="width: 55px">
                                 <label for="quantidade" style="margin: 0px;">QTD<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" required autofocus>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="quantidade" name="quantidade" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13"  maxlength="4" required autofocus>
                             </div>
                             <div class="m-1" style="width: 75px">
                                 <label for="preco" style="margin: 0px;">Preço<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco" name="preco" placeholder="R$" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco" name="preco" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </div>
                             <div class="m-1" style="width: 75px">
                                 <label for="preco_custo" style="margin: 0px;">Custo<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_custo" name="preco_custo" placeholder="R$" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_custo" name="preco_custo" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </div>
                             <div class="m-1" style="width: 95px">
                                 <label for="preco_promocao" style="margin: 0px;">Promoção<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_promocao" name="preco_promocao" placeholder="R$" required>
+                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="preco_promocao" name="preco_promocao" placeholder="R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </div>
                             <div class="m-1">
                                 <label for="validade" style="margin: 0px;">Validade<code>*</code></label>

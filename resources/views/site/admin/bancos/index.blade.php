@@ -81,14 +81,14 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input class="form-control col-5" type="text" name="valor" placeholder="Valor R$" required>
+                                    <input class="form-control col-5" type="text" name="valor" placeholder="Valor R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                                     <select class="form-control col-5" name="banco_id" required >
                                         <option value="">Escolhe o Banco...</option>
                                         @foreach ($bancos as $banco)   
                                             <option value="{{ $banco->id }}">{{ $banco->nome }}</option>
                                         @endforeach
                                     </select>
-                                    <input class="form-control col-10" type="text" name="motivo" placeholder="Descreva o motivo..." required>
+                                    <input class="form-control col-10" type="text" name="motivo" placeholder="Descreva o motivo..." maxlength="30" required>
                                 </form>
                             </div>
                             <div class="modal-footer">

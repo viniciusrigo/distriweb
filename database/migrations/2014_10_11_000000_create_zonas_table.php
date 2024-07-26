@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('zonas', function (Blueprint $table) {
             $table->id();
             $table->string('nome', 15);
-            $table->decimal('entrega', 4, 2);
+            $table->float('entrega', 4, 2);
             $table->time('tempo_entrega');
         });
     }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tipo_contas', function (Blueprint $table) {
             $table->id();
-            $table->string('tipo_conta');
+            $table->string('tipo_conta', 25);
         });
     }
 

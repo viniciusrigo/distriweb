@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('fluxo_bancos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('banco_id');
-            $table->decimal('valor', 8, 2);
+            $table->float('valor', 8, 2);
             $table->enum('tipo', ['e', 's']);
             $table->enum('mov_extra', ['n', 's'])->nullable()->default('n');
-            $table->string('motivo', 100)->nullable();
+            $table->string('motivo', 30)->nullable();
             $table->datetime('data');
 
             $table->foreign('banco_id')->references('id')->on('bancos');

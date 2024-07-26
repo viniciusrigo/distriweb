@@ -89,7 +89,7 @@
                         <div class="d-flex justify-content-center col-md-6 col-12">
                             <input form="form_carrinho" class="form-control" id="novo_endereco" name="novo_endereco" placeholder="Digite aqui caso não esteja na {{ auth()->user()->logradouro }}"></input>
                         </div>
-                        <div class="d-flex justify-content-center col-md-2">
+                        <div class="d-flex justify-content-center col-md-3">
                             <div style="display: none">
                                 @foreach ($zonas as $zona)
                                     <input value="{{ $zona->entrega }}" id="{{ $zona->id }}">
@@ -176,14 +176,14 @@
                                 <span>Pontos Ganhos: {{ $total != null ? round($total, 0) : "" }} </span>
                             </div>
                             <div class="col-12">
-                                <span>Produtos: R$ </span><input id="produtos" style="border: none; width: 70px; background-color: #ffffff; color: black;" type="text" value="{{ $total != null ? number_format($total, 2, ',', '') : "" }}" disabled>
+                                <span>Produtos: R$ </span><input id="produtos" style="border: none; width: 70px; background-color: #ffffff; color: black;" type="text" value="{{ $total != null ? number_format($total, 2, '.', '') : "" }}" disabled>
                             </div>
                             <div class="col-12">
                                 <span class="ml-auto">Entrega: R$</span>
                                 @foreach ($zonas as $zona)
                                     @if ($zona->id == auth()->user()->zona_id)
                                         <span id="span-zona">{{ number_format($zona["entrega"], 2, ',', '') }}</span>
-                                        <input form="form_carrinho" id="zona_padrao" name="frete" style="border: none; width: 50px; background-color: #ffffff; color: black;" type="hidden" value="{{ number_format($zona["entrega"], 2, ',', '') }}" readonly>
+                                        <input form="form_carrinho" id="zona_padrao" name="frete" style="border: none; width: 50px; background-color: #ffffff; color: black;" type="hidden" value="{{ number_format($zona["entrega"], 2, '.', '') }}" readonly>
                                     @endif
                                 @endforeach
                                 <input form="form_carrinho" id="zona_nova" name="frete" style="border: none; width: 50px; background-color: #ffffff; color: black;" type="hidden" readonly>
@@ -218,7 +218,7 @@
                             <span>Total: R$</span><span id="total-span"></span>
                             <input form="form_carrinho" id="total" name="total" style="border: none; width: 95px; background-color: #e4e4e4; color: black;" type="hidden">
                         </div>
-                        <div class="col-md-3 col-12">
+                        <div class="col-md-4 col-12">
                             <button class="btn btn-primary col-md-12" form="form_carrinho" type="submit">Fazer Pedido</button>
                         </div>
                     </div>
@@ -302,6 +302,7 @@
 
                 var produtos = parseFloat($('#produtos').val())
                 var zona_padrao = parseFloat($('#zona_padrao').val())
+                console.log(produtos)
                 $("#total").val(produtos + zona_padrao)
                 $("#total-span").html((produtos + zona_padrao).toFixed(2))
 

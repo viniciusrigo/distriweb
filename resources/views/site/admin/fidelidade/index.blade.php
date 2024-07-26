@@ -83,7 +83,7 @@
                                                     <form action="{{ route('admin.fidelidade.adicionar') }}" method="POST">
                                                         @csrf
                                                         <input type="hidden" name="variavel_produto_id" value="{{ $produto->id }}">
-                                                        <input style="width: 50px; height: 25px; border-radius: 3px; border: 3px solid #e0e0e0" type="text" name="pontos">
+                                                        <input style="width: 50px; height: 25px; border-radius: 3px; border: 3px solid #e0e0e0" type="text" name="pontos" maxlength="4">
                                                         <button type="submit" style="border: none;" class="badge badge-success">Adicionar</button>
                                                     </form>
                                                 </td>

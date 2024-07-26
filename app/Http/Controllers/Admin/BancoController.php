@@ -21,8 +21,10 @@ class BancoController extends Controller
     public function page_index(){
         $bancos = Banco::all();
 
+        $inicio = date("Y-m-01 00:00:00", strtotime(now()));
+        $fim = date("Y-m-d H:i:s", strtotime(now()));
         for($i = 0; $i < count($bancos); $i++){
-            $fluxos = FluxoBanco::where("banco_id", $bancos[$i]->id)->orderBy("data", "desc")->take("150")->get();
+            $fluxos = FluxoBanco::where("banco_id", $bancos[$i]->id)->orderBy("data", "desc")->whereBetween("data", [$inicio, $fim])->get();
             $bancos[$i]->fluxos = $fluxos;
         }
 

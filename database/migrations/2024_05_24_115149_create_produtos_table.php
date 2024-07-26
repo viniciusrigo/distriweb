@@ -23,10 +23,10 @@ return new class extends Migration
             $table->string('cst_pis')->nullable();
             $table->string('cst_cofins')->nullable();
             $table->string('cst_ipi')->nullable();
-            $table->decimal('perc_icms')->nullable();
-            $table->decimal('perc_pis')->nullable();
-            $table->decimal('perc_cofins')->nullable();
-            $table->decimal('perc_ipi')->nullable();
+            $table->float('perc_icms')->nullable();
+            $table->float('perc_pis')->nullable();
+            $table->float('perc_cofins')->nullable();
+            $table->float('perc_ipi')->nullable();
             $table->enum('ativo', ['n', 's'])->nullable(false)->default('s');
 
             $table->foreign('categoria_id')->references('id')->on('categoria_produtos');

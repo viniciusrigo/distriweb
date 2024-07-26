@@ -18,10 +18,10 @@ return new class extends Migration
             $table->integer("variavel_quantidade")->nullable();
             $table->boolean("fardo_quantidade")->nullable()->default(false);
             $table->integer('pontos')->nullable()->default(null);
-            $table->decimal('preco', 8, 2)->nullable(false)->default(0);
-            $table->decimal('preco_custo', 8, 2)->nullable(false)->default(0);
-            $table->decimal('preco_promocao', 8, 2)->nullable()->default(0);
-            $table->decimal('lucro', 8, 2)->nullable();
+            $table->float('preco', 8, 2)->nullable(false)->default(0);
+            $table->float('preco_custo', 8, 2)->nullable(false)->default(0);
+            $table->float('preco_promocao', 8, 2)->nullable()->default(0);
+            $table->float('lucro', 8, 2)->nullable();
             $table->string('codigo_barras', 20)->unique()->nullable();
             $table->date('validade')->nullable();
             $table->enum('promocao', ['n', 's'])->nullable()->default('n');

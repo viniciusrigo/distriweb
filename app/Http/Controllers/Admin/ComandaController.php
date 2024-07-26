@@ -48,7 +48,8 @@ class ComandaController extends Controller
                 "comandas.status",
                 "comandas.data_abertura",
                 "comandas.data_fechamento"
-            )->get();
+            )->take(100)
+            ->get();
 
         for($i= 0;$i<count($comandas);$i++) {
             $comandaProduto = DB::table("carrinho_comandas")->where("comanda_id", "=", $comandas[$i]->id)

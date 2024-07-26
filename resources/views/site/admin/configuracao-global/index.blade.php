@@ -25,10 +25,10 @@
                 <div class="modal-body">
                     <form id="form-banco" class="d-flex justify-content-center row" action="{{ route('admin.configuracao-global.novo-banco') }}" method="POST">
                         @csrf
-                        <input class="form-control col-5" type="text" name="nome" placeholder="Nome do Banco" required>
-                        <input class="form-control col-5" type="text" name="agencia" placeholder="Agência" required>
-                        <input class="form-control col-5" type="text" name="conta" placeholder="Conta" required>
-                        <input class="form-control col-5" type="text" name="saldo" placeholder="Saldo Inicial/Atual" required>
+                        <input class="form-control col-5" type="text" name="nome" placeholder="Nome do Banco" maxlength="50" required>
+                        <input class="form-control col-5" type="text" name="agencia" placeholder="Agência" maxlength="10" required>
+                        <input class="form-control col-5" type="text" name="conta" placeholder="Conta" maxlength="50" required>
+                        <input class="form-control col-5" type="text" name="saldo" placeholder="Saldo Inicial/Atual" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="10" required>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -49,8 +49,8 @@
                 <div class="modal-body">
                     <form id="form-pagamento" class="d-flex justify-content-center row" action="{{ route('admin.configuracao-global.nova-forma-pagamento') }}" method="POST">
                         @csrf
-                        <input class="form-control col-5" type="text" name="nome" placeholder="Nome" required>
-                        <input class="form-control col-5" type="text" name="taxa" placeholder="Taxa" required>
+                        <input class="form-control col-5" type="text" name="nome" placeholder="Nome" maxlength="25" required>
+                        <input class="form-control col-5" type="text" name="taxa" placeholder="Taxa" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="4" required>
                         <select class="form-control col-5" name="banco_id" placeholder="Conta" required >
                             <option value="">Banco</option>
                             @foreach ($bancos as $banco)
@@ -79,7 +79,7 @@
                 <div class="modal-body">
                     <form id="form-tipo-conta" class="d-flex justify-content-center row" action="{{ route('admin.configuracao-global.novo-tipo-conta') }}" method="POST">
                         @csrf
-                        <input class="form-control col-5" type="text" name="tipo_conta" placeholder="Nome" required>
+                        <input class="form-control col-5" type="text" name="tipo_conta" placeholder="Nome" maxlength="25" required>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -90,10 +90,10 @@
     </div>
     <div class="d-flex justify-content-center row mb-1">
         <div class="d-flex justify-content-center col-12 mt-2">
-            <div class="col-12 col-md-3 p-1">
+            <div class="col-12 col-md-2 p-1">
                 <div class="card card-success collapsed-card">
                     <div class="card-header p-2">
-                        <h3 class="card-title">Bancos</h3>
+                        <h3 class="card-title"><strong>Bancos</strong></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                 <i class="fas fa-expand"></i>
@@ -103,15 +103,14 @@
                             </button>
                         </div>
                     </div>
-                    <div style="height: 150px; overflow: auto" class="card-body p-2">
+                    <div style="height: 200px; overflow: auto" class="card-body p-2">
                         <div class="d-flex justify-content-center">
-                            <table class="table-sm table-hover">
+                            <table class="table-sm table-hover col-12">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col">Ag</th>
-                                        <th scope="col">Conta</th>
-                                        <th scope="col">#</th>
+                                        <th>Nome</th>
+                                        <th>Ag</th>
+                                        <th>Conta</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,7 +119,6 @@
                                             <td>{{ $banco->nome }}</td>
                                             <td>{{ $banco->agencia }}</td>
                                             <td>{{ $banco->conta }}</td>
-                                            <td>#</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -135,7 +133,7 @@
             <div class="col-12 col-md-3 p-1">
                 <div class="card card-success collapsed-card">
                     <div class="card-header p-2">
-                        <h3 class="card-title">Formas Pagamentos</h3>
+                        <h3 class="card-title"><strong>Formas Pagamentos</strong></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                 <i class="fas fa-expand"></i>
@@ -145,15 +143,15 @@
                             </button>
                         </div>
                     </div>
-                    <div style="height: 150px; overflow: auto" class="card-body p-2">
+                    <div style="height: 200px; overflow: auto" class="card-body p-2">
                         <div class="d-flex justify-content-center">
-                            <table class="table-sm table-hover">
+                            <table class="table-sm table-hover col-12">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col">Taxa</th>
-                                        <th scope="col">Banco</th>
-                                        <th scope="col">#</th>
+                                        <th>Nome</th>
+                                        <th>Taxa</th>
+                                        <th>Banco</th>
+                                        <th>Nova Taxa</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -162,7 +160,15 @@
                                             <td>{{ $forma_pagamento->nome }}</td>
                                             <td>{{ $forma_pagamento->taxa }}%</td>
                                             <td>{{ $forma_pagamento->banco_nome }}</td>
-                                            <td>#</td>
+                                            <td>
+                                                <form action="{{ route('admin.configuracao-global.update-taxa') }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="forma_pagamento_id" value="{{ $forma_pagamento->id }}">
+                                                    <input style="width: 50px; height: 25px; border-radius: 3px; border: 3px solid #e0e0e0" type="text" name="nova_taxa" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44"onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="5">
+                                                    <button type="submit" style="border: none;" class="badge badge-success">Atualizar</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -174,10 +180,10 @@
                     </div>            
                 </div> 
             </div>
-            <div class="col-12 col-md-4 p-1">
+            <div class="col-12 col-md-3 p-1">
                 <div class="card card-success collapsed-card">
                     <div class="card-header p-2">
-                        <h3 class="card-title">Locais</h3>
+                        <h3 class="card-title"><strong>Locais</strong></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                 <i class="fas fa-expand"></i>
@@ -187,19 +193,19 @@
                             </button>
                         </div>
                     </div>
-                    <div style="height: 150px; overflow: auto" class="card-body p-2">
+                    <div style="height: 200px; overflow: auto" class="card-body p-2">
                         <div class="d-flex justify-content-center">
                             <div style="display: none;">
                                 <form id="locais" action="{{ route('admin.configuracao-global.store') }}" method="POST">
                                     @csrf
                                 </form>
                             </div>
-                            <table class="table-sm table-hover">
+                            <table class="table-sm table-hover col-12">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col">Crédito</th>
-                                        <th scope="col">Débito</th>
+                                        <th>Nome</th>
+                                        <th>Crédito</th>
+                                        <th>Débito</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -242,7 +248,7 @@
             <div class="col-12 col-md-2 p-1">
                 <div class="card card-success collapsed-card">
                     <div class="card-header p-2">
-                        <h3 class="card-title">Tipos de Conta</h3>
+                        <h3 class="card-title"><strong>Tipos de Conta</strong></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="maximize">
                                 <i class="fas fa-expand"></i>
@@ -252,20 +258,18 @@
                             </button>
                         </div>
                     </div>
-                    <div style="height: 150px; overflow: auto" class="card-body p-2">
+                    <div style="height: 200px; overflow: auto" class="card-body p-2">
                         <div class="d-flex justify-content-center">
-                            <table class="table-sm table-hover">
+                            <table class="table-sm table-hover col-12">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Tipo de Conta</th>
-                                        <th scope="col">#</th>
+                                        <th>Tipo de Conta</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($tipo_contas as $conta)
                                         <tr>
                                             <td>{{ $conta->tipo_conta }}</td>
-                                            <td>#</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -277,6 +281,58 @@
                     </div>            
                 </div> 
             </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center row mb-1">
+        <div class="d-flex justify-content-center col-12 mt-2">
+            <div class="col-12 col-md-3 p-1">
+                <div class="card card-success collapsed-card">
+                    <div class="card-header p-2">
+                        <h3 class="card-title"><strong>Zonas</strong></h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="height: 200px; overflow: auto" class="card-body p-2">
+                        <div class="d-flex justify-content-center">
+                            <table class="table-sm table-hover col-12">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Taxa</th>
+                                        <th>Tempo</th>
+                                        <th>Atualizar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($zonas as $zona)
+                                        <tr>
+                                            <td>{{ $zona->nome }}</td>
+                                            <td>R${{ $zona->entrega }}</td>
+                                            <td>{{ $zona->tempo_entrega }}</td>
+                                            <td>
+                                                <form action="{{ route('admin.configuracao-global.update-zona') }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="zona_id" value="{{ $zona->id }}">
+                                                    <input style="width: 50px; height: 25px; border-radius: 3px; border: 3px solid #e0e0e0" type="text" name="nova_entrega" value="{{ $zona->entrega }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44"  maxlength="5">
+                                                    <input style="width: 70px; height: 25px; border-radius: 3px; border: 3px solid #e0e0e0" type="text" name="novo_tempo_entrega" value="{{ $zona->tempo_entrega }}" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 58"  maxlength="8">
+                                                    <button type="submit" style="border: none;" class="badge badge-success">Atualizar</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>            
+                </div>
+            </div>            
         </div>
     </div>
     <div class="card card-primary">
@@ -297,7 +353,7 @@
                 @endif
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="cnpj" style="margin: 0px;">CNPJ<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cnpj" name="cnpj" value="{{ isset($info_empresa["cnpj"]) ? $info_empresa["cnpj"] : "" }}" required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cnpj" name="cnpj" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13"   maxlength="14" value="{{ isset($info_empresa["cnpj"]) ? $info_empresa["cnpj"] : "" }}" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="tipo_tributacao" style="margin: 0px;">Tipo de Tributação</label>
@@ -310,28 +366,32 @@
                 </div>
                 <div class="form-group col-md-4" style="padding: 3px;">
                     <label for="razao_social" style="margin: 0px;">Razão Social<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="razao_social" name="razao_social" value="{{ isset($info_empresa["razao_social"]) ? $info_empresa["razao_social"] : "" }}" required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="razao_social" name="razao_social" value="{{ isset($info_empresa["razao_social"]) ? $info_empresa["razao_social"] : "" }}" maxlength="100" required>
                 </div>
                 <div class="form-group col-md-4" style="padding: 3px;">
                     <label for="nome_fantasia" style="margin: 0px;">Nome Fantasia<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome_fantasia" name="nome_fantasia" value="{{ isset($info_empresa["nome_fantasia"]) ? $info_empresa["nome_fantasia"] : "" }}" required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome_fantasia" name="nome_fantasia" value="{{ isset($info_empresa["nome_fantasia"]) ? $info_empresa["nome_fantasia"] : "" }}" maxlength="50" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="ie" style="margin: 0px;">Inscrição Estadual</label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="ie" name="ie" value="{{ isset($info_empresa["ie"]) ? $info_empresa["ie"] : "" }}">
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="ie" name="ie" value="{{ isset($info_empresa["ie"]) ? $info_empresa["ie"] : "" }}" maxlength="20">
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="telefone" style="margin: 0px;">Telefone<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="telefone" name="telefone" value="{{ isset($info_empresa["telefone"]) ? $info_empresa["telefone"] : "" }}" required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="telefone" name="telefone" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" value="{{ isset($info_empresa["telefone"]) ? $info_empresa["telefone"] : "" }}" maxlength="11" required>
                 </div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="codigo_interno" style="margin: 0px;">Código Interno Entrega<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_interno" name="codigo_interno" value="{{ isset($info_empresa["codigo_interno"]) ? $info_empresa["codigo_interno"] : "" }}" maxlength="10" required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_interno" name="codigo_interno" value="{{ isset($info_empresa["codigo_interno"]) ? $info_empresa["codigo_interno"] : "" }}" maxlength="4" required>
+                </div>
+                <div class="form-group col-md-1" style="padding: 3px;">
+                    <label for="minimo_produto" style="margin: 0px;">Min. Produto<code>*</code></label>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="minimo_produto" name="minimo_produto" placeholder="Quantidade" value="{{ isset($info_empresa["minimo_produto"]) ? $info_empresa["minimo_produto"] : "" }}" maxlength="2" required>
                 </div>
                 <div class="form-group col-md-12"><strong style="color: #007BFF;">Endereço</strong></div>
                 <div class="form-group col-md-2" style="padding: 3px;">
                     <label for="cep" style="margin: 0px;">CEP<code>*</code></label>
-                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cep" name="cep"  value="{{ isset($info_empresa["cep"]) ? $info_empresa["cep"] : "" }}" required>
+                    <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cep" name="cep"  value="{{ isset($info_empresa["cep"]) ? $info_empresa["cep"] : "" }}" maxlength="8" required>
                 </div>
                 <div class="form-group col-md-3" style="padding: 3px;">
                     <label for="logradouro" style="margin: 0px;">Logradouro</label>

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('forma_pagamentos', function (Blueprint $table) {
             $table->id();
             $table->string('nome', 25);
-            $table->decimal('taxa', 4, 2)->nullable();
+            $table->float('taxa', 4, 2)->nullable();
             $table->unsignedBigInteger('banco_id')->nullable();
 
             $table->foreign('banco_id')->references('id')->on('bancos');

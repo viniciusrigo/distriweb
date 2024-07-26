@@ -155,7 +155,7 @@
                             <form id="form-adicional" action="{{ route('admin.pdv.adicional-venda') }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="venda_id" value="{{ Request::segment(4) }}">
-                                <input class="form-control form-control-border border-width-2 col-md-12" name="adicional" type="text" placeholder="Valor Adicional R$" required>
+                                <input class="form-control form-control-border border-width-2 col-md-12" name="adicional" type="text" placeholder="Valor Adicional R$" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7" required>
                             </form>
                         </div>
                         <div class="d-flex justify-content-center col-md-3">
@@ -196,7 +196,7 @@
                                 </div>
                             </div>
                             <div class="justify-content-center col-md-12" id="div_dinheiro" style="padding: 3px;">
-                                <input type="text" style="margin: 0px;height: 2em;font-size: 25px;" class="form-control form-control-border border-width-2 col-md-4" id="input_dinheiro" name="dinheiro" placeholder="R$0.00">
+                                <input type="text" style="margin: 0px;height: 2em;font-size: 25px;" class="form-control form-control-border border-width-2 col-md-4" id="input_dinheiro" name="dinheiro" placeholder="R$0.00" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" maxlength="7">
                                 <input type="text" style="margin: 0px;height: 2em;font-size: 25px;" class="form-control form-control-border border-width-2 col-md-4" id="input_troco" name="troco" placeholder="Troco" readonly>
                             </div>
                         </form>
