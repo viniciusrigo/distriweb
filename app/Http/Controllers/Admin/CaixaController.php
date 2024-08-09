@@ -57,12 +57,13 @@ class CaixaController extends Controller
                     $banco->save();
                     Caixa::create($dados);
                 });
+            } else {
+                DB::transaction(function() use ($banco, $dados){
+                    $banco->save();
+                    Caixa::create($dados);
+                });
             }
 
-            DB::transaction(function() use ($banco, $dados){
-                $banco->save();
-                Caixa::create($dados);
-            });
             
             $success = 'Caixa aberto com sucesso';
             session()->flash('success', $success);

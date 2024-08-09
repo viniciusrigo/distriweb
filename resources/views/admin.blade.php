@@ -24,70 +24,70 @@
         @can('acesso_financeiro')
         <div class="d-flex justify-content-center row col-11 p-2">
             <select id="filtros" class="form-control col-2">
-                <option value="today">Hoje</option>
-                <option value="week">Últimos 7 dias</option>
-                <option value="mouth" selected>Mês Atual</option>
-                <option value="trimester">Trimestre</option>
-                <option value="year">Ano Atual</option>
+                <option value="hoje">Hoje</option>
+                <option value="semana">Últimos 7 dias</option>
+                <option value="mes" selected>Mês Atual</option>
+                <option value="trimestre">Trimestre</option>
+                <option value="ano">Ano Atual</option>
             </select>
             <div class="d-flex align-items-center ml-3">
                 <input type="checkbox" id="check_especifico" onclick="especifico()">
                 <span class="ml-1">Dia Específico</span>
             </div>
-            <form style="display: none;" class="ml-1" id="form_especifico" action="">
-                <input class="form-control" type="date" name="especifico">
-                <button class="btn btn-info" type="submit">Buscar</button>
-            </form>
+            <div style="display: none;" class="ml-1" id="form_especifico">
+                <input id="dia-especifico" class="form-control" type="date" name="especifico">
+                <button id="buscar-especifico" class="btn btn-info" type="button">Buscar</button>
+            </div>
             <div class="d-flex align-items-center ml-3">
                 <input type="checkbox" id="check_periodo" onclick="periodo()">
                 <span class="ml-1">Período</span>
             </div>
-            <form style="display: none;" id="form_periodo" class="ml-1" action="">
-                <input class="form-control" type="date" name="inicial">
-                <input class="form-control" type="date" name="final">
-                <button class="btn btn-info" type="submit">Buscar</button>
-            </form>
+            <div style="display: none;" id="form_periodo" class="ml-1">
+                <input id="dia-inicial" class="form-control" type="date" name="inicial">
+                <input id="dia-final" class="form-control" type="date" name="final">
+                <button id="buscar-periodo" class="btn btn-info" type="button">Buscar</button>
+            </div>
         </div>
         <div class="d-flex justify-content-center row col-11">
             <div class="info-box shadow-none col-md-2 col-sm-6 col-12 m-1">
                 <span style="background-color: #d3d1ff; color: #6f68fe" class="info-box-icon"><i class="fas fa fa-info"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Vendas</span>
-                    <span style="font-size: 25px;" class="info-box-number">{{ $vendas }}</span>
+                    <span id="vendas" style="font-size: 25px;" class="info-box-number">{{ $vendas }}</span>
                 </div>           
             </div>
             <div class="info-box shadow-none col-md-2 col-sm-6 col-12 m-1">
                 <span style="background-color: #a3dcff; color: #178ed7" class="info-box-icon"><i class="fa-solid fa-arrow-trend-up"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Faturamento</span>
-                    <span style="font-size: 25px;" class="info-box-number">R${{ $faturamento }}</span>
+                    <span id="faturamento" style="font-size: 25px;" class="info-box-number">R${{ $faturamento }}</span>
                 </div>           
             </div>
             <div class="info-box shadow-none col-md-2 col-sm-6 col-12 m-1">
                 <span style="background-color: #ffdbad; color: #e28914" class="info-box-icon"><i class="fa-solid fa-dollar-sign"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Lucro Bruto</span>
-                    <span style="font-size: 25px;" class="info-box-number">R${{ $lucro }}</span>
+                    <span id="lucro-bruto" style="font-size: 25px;" class="info-box-number">R${{ $lucro }}</span>
                 </div>           
             </div>
             <div class="info-box shadow-none col-md-2 col-sm-6 col-12 m-1">
                 <span style="background-color: #ffaeae; color: #e21414" class="info-box-icon"><i class="fa-solid fa-arrow-trend-down"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Despesas</span>
-                    <span style="font-size: 25px;" class="info-box-number">R${{ $despesas }}</span>
+                    <span id="despesas" style="font-size: 25px;" class="info-box-number">R${{ $despesas }}</span>
                 </div>           
             </div>
             <div class="info-box shadow-none col-md-2 col-sm-6 col-12 m-1">
                 <span style="background-color: #ccffb3; color: #49b812" class="info-box-icon"><i class="fa-solid fa-sack-dollar"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Lucro Líquido</span>
-                    <span style="font-size: 25px;" class="info-box-number">R${{ $lucro - $despesas }}</span>
+                    <span id="lucro-liquido" style="font-size: 25px;" class="info-box-number">R${{ $lucro - $despesas }}</span>
                 </div>           
             </div>
         </div>
         @endcan
         {{-- TABELA --}}
-        <div class="d-flex justify-content-center col-12">
+        <div class="d-flex justify-content-center row col-12">
             <div class="col-md-3 m-1">
                 <div style="height: 350px; overflow:auto;" class="card table-responsive p-0">  
                     <div class="card-header">
@@ -201,7 +201,7 @@
             </div>
         </div>
         
-        <div class="d-flex justify-content-center col-12">
+        <div class="d-flex justify-content-center row col-12">
             <div class="col-md-3 m-1">
                 <div style="height: 350px; overflow:auto;" class="card table-responsive p-0">  
                     <div class="card-header">
@@ -459,7 +459,79 @@
 
             $("select").on("change", function(){
                 let valor = $("select option:selected").val()
-                alert(valor)
+                $.ajax({
+                    url: "/admin/indicadores-ajax",
+                    method: 'post',
+                    data: {
+                        'data': valor
+                    },
+                    success: function(response){
+                        $("#vendas").html("")
+                        $("#faturamento").html("")
+                        $("#lucro-bruto").html("")
+                        $("#despesas").html("")
+                        $("#lucro-liquido").html("")
+                        $("#vendas").html(response.vendas)
+                        $("#faturamento").html("R$"+response.faturamento)
+                        $("#lucro-bruto").html("R$"+response.lucro)
+                        $("#despesas").html("R$"+response.despesas)
+                        $("#lucro-liquido").html("R$"+ (response.lucro - response.despesas))
+                    }
+                });
+            })
+
+            $("#buscar-especifico").on("click", function(){
+                var dia = $("#dia-especifico").val()
+                $.ajax({
+                    url: "/admin/indicadores-ajax",
+                    method: 'post',
+                    data: {
+                        'data': 'especifico',
+                        'dia': dia
+                    },
+                    success: function(response){
+                        $("#vendas").html("")
+                        $("#faturamento").html("")
+                        $("#lucro-bruto").html("")
+                        $("#despesas").html("")
+                        $("#lucro-liquido").html("")
+                        $("#vendas").html(response.vendas)
+                        $("#faturamento").html("R$"+response.faturamento)
+                        $("#lucro-bruto").html("R$"+response.lucro)
+                        $("#despesas").html("R$"+response.despesas)
+                        $("#lucro-liquido").html("R$"+ (response.lucro - response.despesas))
+                    }
+                });
+            })
+
+            $("#buscar-periodo").on("click", function(){
+                var dia_inicial = $("#dia-inicial").val()
+                var dia_final = $("#dia-final").val()
+                alert(dia_inicial)
+                alert(dia_final)
+                $.ajax({
+                    url: "/admin/indicadores-ajax",
+                    method: 'post',
+                    data: {
+                        'data': 'periodo',
+                        'dia_inicial': dia_inicial,
+                        'dia_final': dia_final
+                    },
+                    success: function(response){
+                        console.log(response)
+                        console.log(response.despesas)
+                        $("#vendas").html("")
+                        $("#faturamento").html("")
+                        $("#lucro-bruto").html("")
+                        $("#despesas").html("")
+                        $("#lucro-liquido").html("")
+                        $("#vendas").html(response.vendas)
+                        $("#faturamento").html("R$"+response.faturamento)
+                        $("#lucro-bruto").html("R$"+response.lucro)
+                        $("#despesas").html("R$"+response.despesas)
+                        $("#lucro-liquido").html("R$"+ (response.lucro - response.despesas))
+                    }
+                });
             })
 
 

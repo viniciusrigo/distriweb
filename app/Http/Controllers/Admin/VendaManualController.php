@@ -26,6 +26,15 @@ use Illuminate\Support\Facades\DB;
 class VendaManualController extends Controller
 {
     public function page_index(){
+        $caixa_aberto = Caixa::where("status", "a")->first();
+        if (!isset($caixa_aberto)){
+
+            $error = "Abra o caixa antes de começar as vendas";
+            session()->flash("error", $error);
+
+            return redirect()->route("admin.caixa.index");
+        }
+        
         $venda = Venda::where("status", "=", "a")->where("local_id", null)->get();
 
         if(count($venda) > 0){
@@ -100,7 +109,7 @@ class VendaManualController extends Controller
                 if ($produto->fardo_quantidade == null) {
                     if ($produto->variavel_quantidade == 0) {
                         //dd($produto);
-                        $lote = Lote::where("codigo_barras", $produto->codigo_barras)->orderBy("data_cadastro", "asc")->first();
+                        $lote = Lote::where("variavel_produto_id", $produto->id)->orderBy("data_cadastro", "asc")->first();
                         if(isset($lote)){
                             $produto->variavel_quantidade = $lote->quantidade;
                             $produto->preco = $lote->preco;

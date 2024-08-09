@@ -16,6 +16,9 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
             body{
@@ -76,22 +79,22 @@
                             @csrf
                             <div class="form-row d-flex flex-wrap">                            
                                 <div class="form-group col-md-12 mb-1">
-                                    <input type="text" class="form-control form-control-sm fs-6" name="name" placeholder="Nome">
+                                    <input type="text" class="form-control form-control-sm fs-6" name="name" placeholder="Nome" required>
                                 </div>
                                 <div class="form-group col-md-12 mb-1">
-                                    <input type="text" class="form-control form-control-sm fs-6" name="email" placeholder="E-Mail">
+                                    <input type="text" class="form-control form-control-sm fs-6" name="email" placeholder="E-Mail" required>
                                 </div>
                                 <div class="form-group col-md-6 mb-1">
-                                    <input type="text" class="form-control form-control-sm fs-6" name="cpf" placeholder="CPF">
+                                    <input type="text" class="form-control form-control-sm fs-6" name="cpf" placeholder="CPF" required>
                                 </div>
                                 <div class="form-group col-md-6 mb-1">
-                                    <input type="text" class="form-control form-control-sm fs-6" name="celular" placeholder="EX: 43988887777">
+                                    <input type="text" class="form-control form-control-sm fs-6" name="celular" placeholder="EX: 43988887777" required>
                                 </div>
                                 <div class="form-group col-md-6 mb-1">
-                                    <input type="text" class="form-control form-control-sm fs-6" id="cep" name="cep" placeholder="CEP">
+                                    <input type="text" class="form-control form-control-sm fs-6" id="cep" name="cep" placeholder="CEP" required>
                                 </div>
                                 <div class="form-group col-md-6 mb-1">
-                                    <select class="form-control form-control-sm fs-6" name="zona_id">
+                                    <select class="form-control form-control-sm fs-6" name="zona_id" required>
                                         <option value="">Zona...</option>
                                         <option value="1">Norte</option>
                                         <option value="2">Sul</option>
@@ -103,7 +106,7 @@
                                     <input type="text" class="form-control form-control-sm fs-6" id="logradouro" name="logradouro" placeholder="Logradouro">
                                 </div>
                                 <div class="form-group col-md-3 mb-1">
-                                    <input type="text" class="form-control form-control-sm fs-6" name="numero" placeholder="Nº">
+                                    <input type="text" class="form-control form-control-sm fs-6" name="numero" placeholder="Nº" required>
                                 </div>
                                 <div class="form-group col-md-9 mb-1">
                                     <input type="text" class="form-control form-control-sm fs-6" name="complemento" placeholder="Complemento">
@@ -115,14 +118,16 @@
                                 <input type="hidden" id="ddd" name="ddd" value="">
                                 
                                 <div class="form-group col-md-6 mb-1">
-                                    <input type="password" class="form-control form-control-sm fs-6" name="password" placeholder="Senha">
+                                    <input id="senha" type="password" class="form-control form-control-sm fs-6" name="password" placeholder="Senha" minlength="6">
                                 </div>
                                 <div class="form-group col-md-6 mb-1">
-                                    <input type="password" class="form-control form-control-sm fs-6" placeholder="Confirmar Senha">
+                                    <input id="confirma-senha" type="password" class="form-control form-control-sm fs-6" placeholder="Confirmar Senha" minlength="6">
                                 </div>
-
+                                <div id="div-alerta" class="d-none justify-content-center align-items-center col-md-12 mb-1">
+                                    <span style="background-color: #ffacac; padding: 0px 10px 0 10px; color:#ff0000; font-size: 12px" class="rounded-pill mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Senhas incompatíveis</span>
+                                </div>
                                 <div class="input-group mb-3">
-                                    <button class="btn btn-lg w-100 fs-6 text-white" style="background-color: #913e96">Cadastrar</button>
+                                    <button id="cadastrar" class="btn btn-lg w-100 fs-6 text-white" style="background-color: #913e96" disabled>Cadastrar</button>
                                 </div>
                             </div>
                         </form>
@@ -148,6 +153,20 @@
                     $('#ibge').val(dados.ibge)
                     $('#ddd').val(dados.ddd)
                 })  
+            })
+
+            $("#confirma-senha").on("keyup", function(){
+                var senha = $("#senha").val()
+                var confirma_senha = $(this).val()
+                if(senha == confirma_senha){
+                    $("#cadastrar").removeAttr('disabled')
+                    $("#div-alerta").removeClass('d-flex')
+                    $("#div-alerta").addClass('d-none')
+                } else {
+                    $("#cadastrar").attr('disabled','disabled')
+                    $("#div-alerta").removeClass('d-none')
+                    $("#div-alerta").addClass('d-flex')
+                }
             })
         </script>
     </body>

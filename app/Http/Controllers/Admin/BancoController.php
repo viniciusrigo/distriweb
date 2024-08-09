@@ -43,8 +43,13 @@ class BancoController extends Controller
                 $fluxo_caixa = new FluxoCaixa();
                 $fluxo_caixa->caixa_id = $caixa_aberto->id;
                 $fluxo_caixa->venda = 0;
-                $fluxo_caixa->dinheiro = $dados_request["valor"];
-                $fluxo_caixa->troco = 0;
+                if($dados_request["acao"] == "Remover"){
+                    $fluxo_caixa->dinheiro = 0;
+                    $fluxo_caixa->troco = $dados_request["valor"];
+                } else {
+                    $fluxo_caixa->dinheiro = $dados_request["valor"];
+                    $fluxo_caixa->troco = 0;
+                }
                 $fluxo_caixa->data = now();
                 $fluxo_caixa->save();
             }

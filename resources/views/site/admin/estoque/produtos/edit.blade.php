@@ -101,14 +101,14 @@
                                         <td>{{ $variavel->ult_compra != null ? date("d/m/Y", strtotime($variavel->ult_compra)) : "" }}</td>
                                         <td>
                                             @if ($variavel->promocao == 's')
-                                                <form action="/admin/estoque/produtos/variavel-promocao/" method="POST">
+                                                <form action="{{ route('admin.estoque.produtos.variavel-promocao') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="status_promocao" value="ativado">
                                                     <input type="hidden" name="variavel_id" value="{{ $variavel->id }}">
                                                     <input onChange="this.form.submit()" type="checkbox" checked>
                                                 </form>
                                             @else
-                                                <form action="/admin/estoque/produtos/variavel-promocao/" method="POST">
+                                                <form action="{{ route('admin.estoque.produtos.variavel-promocao') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="status_promocao" value="desativado">
                                                     <input type="hidden" name="variavel_id" value="{{ $variavel->id }}">
@@ -118,14 +118,14 @@
                                         </td>
                                         <td>
                                             @if ($variavel->variavel_ativo == 's')
-                                                <form action="/admin/estoque/produtos/variavel-status/" method="POST">
+                                                <form action="{{ route('admin.estoque.produtos.variavel-status') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="status_ativo" value="ativado">
                                                     <input type="hidden" name="variavel_id" value="{{ $variavel->id }}">
                                                     <input onChange="this.form.submit()" type="checkbox" checked>
                                                 </form>
                                             @else
-                                                <form action="/admin/estoque/produtos/variavel-status/" method="POST">
+                                                <form action="{{ route('admin.estoque.produtos.variavel-status') }}" method="POST">
                                                     @csrf
                                                     <input type="hidden" name="status_ativo" value="desativado">
                                                     <input type="hidden" name="variavel_id" value="{{ $variavel->id }}">

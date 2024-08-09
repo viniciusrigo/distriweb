@@ -17,7 +17,7 @@
         <div style="margin-top: 40vh;">
             <form class="row" action="{{ route('admin.venda-manual.create') }}" method="GET">
                 <input type="hidden" name="data_venda" value="@php echo now(); @endphp">
-                <button style="margin: 0px;height: 2em;font-size: 35px;" type="submit" class="ml-auto mr-auto btn btn-success">Nova Venda</button>
+                <button style="margin: 0px;height: 2em;font-size: 35px;" type="submit" class="ml-auto mr-auto btn btn-success" autofocus>Nova Venda</button>
             </form>
         </div>  
     </div>

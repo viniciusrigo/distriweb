@@ -8,6 +8,16 @@
 
 @section('css')
     <style>
+        @media (max-width: 575.98px) {
+            .off{
+                display: none;
+            }
+        }
+        @media (min-width: 1200px) {
+            .off{
+                display: flex;
+            }
+        }
         #div_dinheiro, #div_troco {
             display:none;
         }

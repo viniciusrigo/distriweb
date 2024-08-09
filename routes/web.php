@@ -92,6 +92,7 @@ Route::post('/loja/cancelar-pedido', [LojaController::class, 'cancelar_pedido'])
 
 Route::get('/admin', [AdminController::class, 'index'])->middleware('check.client')->name('admin');
 Route::post('/admin/dados', [AdminController::class, 'get_dados'])->middleware('check.client')->name('admin.dados');
+Route::post('/admin/indicadores-ajax', [AdminController::class, 'indicadores_ajax'])->middleware('check.client')->name('admin.indicadores-ajax');
 
 Route::prefix('/admin')->group(function () {
 

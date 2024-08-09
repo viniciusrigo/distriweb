@@ -33,9 +33,17 @@ class EstoqueController extends Controller
         $lista_produtos = Produto::join("categoria_produtos", "produtos.categoria_id", "=", "categoria_produtos.id")
         ->select("produtos.*", "categoria_produtos.nome as categoria_nome")
         ->get();
-        $quantidade_produtos = count($lista_produtos);
 
-        return view("site/admin/estoque/produtos/index", compact("lista_produtos", "quantidade_produtos"));
+        for($x = 0; $x < count($lista_produtos); $x++){
+            $variaveis = DB::select("SELECT variavel_quantidade FROM variaveis_produtos WHERE produto_id = ".$lista_produtos[$x]->id);
+            for($a = 0; $a < count($variaveis); $a++){
+                $lista_produtos[$x]->quantidade += $variaveis[$a]->variavel_quantidade;
+            }
+        }
+        
+        $produtos = VariaveisProduto::all(["id", "variavel_quantidade"]);
+
+        return view("site/admin/estoque/produtos/index", compact("lista_produtos", "produtos"));
     }
 
     public function page_create() {
@@ -437,13 +445,18 @@ class EstoqueController extends Controller
         ->select("produtos.nome", "variaveis_produtos.variavel_nome", "lotes.quantidade", "variaveis_produtos.codigo_barras", "lotes.preco", "lotes.preco_custo", "lotes.preco_promocao", "lotes.validade", "lotes.data_cadastro")
         ->get();
 
-        return view("site/admin/estoque/lotes/index", compact("lotes"));
+        $produtos = VariaveisProduto::where("categoria_id", "!=", 5)->where("categoria_id", "!=", 6)
+        ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
+        ->select("produtos.nome", "variaveis_produtos.id","variaveis_produtos.variavel_nome")
+        ->orderBy("nome", "asc")->get();
+
+        return view("site/admin/estoque/lotes/index", compact("lotes", "produtos"));
     }
 
     public function new_batch(Request $request){
         try{
             if($request->input("quantidade") == null){
-                $variavel = VariaveisProduto::where("codigo_barras", $request->input("codigo_barras"))->get();
+                $variavel = VariaveisProduto::where("id", $request->input("variavel_produto_id"))->get();
 
                 if (count($variavel) > 0){
                     $codigo_barras = $request->input("codigo_barras");
@@ -468,7 +481,6 @@ class EstoqueController extends Controller
                                 <input type="date" style="margin: 0px;" class="form-control form-control-border border-width-2" id="validade" name="validade" required>
                             </div>';
 
-                    session()->flash("codigo_barras", $codigo_barras);
                     session()->flash("divs", $divs);
                     session()->flash("variavel_produto_id", $variavel[0]->id);
                     session()->flash("produto_id", $variavel[0]->produto_id);
@@ -488,7 +500,7 @@ class EstoqueController extends Controller
 
                 Lote::create($dados);
 
-                $variavel = VariaveisProduto::where("codigo_barras", $dados["codigo_barras"])->first(["id"])->toArray();
+                $variavel = VariaveisProduto::where("id", $dados["variavel_produto_id"])->first(["id"])->toArray();
                 $combo_variavel = CombosProduto::where("variavel_produto_id", $variavel["id"])->get();
 
                 if(count($combo_variavel) > 0){

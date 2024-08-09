@@ -23,9 +23,20 @@
                         <input type="hidden" name="variavel_produto_id" value="{{ session('variavel_produto_id') }}">
                         <input type="hidden" name="produto_id" value="{{ session('produto_id') }}">
                         <div id="div_codigo" class="row justify-content-center">
-                            <div class="m-1">
-                                <label for="codigo_barras" style="margin: 0px;">Código de Barras<code>*</code></label>
-                                <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="codigo_barras" name="codigo_barras" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13 || event.charCode == 44" value="{{ session('codigo_barras') }}" required>
+                            <div class="d-flex align-items-center m-1">
+                                <select name="variavel_produto_id" class="js-example-basic-single form-control form-control-border">
+                                    @if (session('variavel_produto_id'))
+                                        @for ($i = 0; $i < count($produtos); $i++)
+                                            @if ($produtos[$i]->id == session('variavel_produto_id'))
+                                                <option value="{{ $produtos[$i]->id }}">{{ $produtos[$i]->nome }} {{ $produtos[$i]->variavel_nome }}</option>
+                                            @endif
+                                        @endfor
+                                    @else       
+                                        @foreach ($produtos as $produto)
+                                            <option value="{{ $produto->id }}">{{ $produto->nome }} {{ $produto->variavel_nome }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
                             </div>
                             @if (session('divs'))
                                 {!! session('divs') !!}

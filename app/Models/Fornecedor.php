@@ -16,6 +16,7 @@ class Fornecedor extends Model
     protected $fillable = [
         "id",
         "cnpj",
+        "contato",
         "nome",
         "fantasia",
         "logradouro",

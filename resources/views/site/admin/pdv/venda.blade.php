@@ -8,6 +8,16 @@
 
 @section('css')
     <style>
+        @media (max-width: 575.98px) {
+            .off{
+                display: none;
+            }
+        }
+        @media (min-width: 1200px) {
+            .off{
+                display: flex;
+            }
+        }
         #div_dinheiro, #div_troco {
             display:none;
         }
@@ -102,7 +112,7 @@
                         <div class="d-flex justify-content-center col-md-9">
                             <select name="variavel_produto_id" class="js-example-basic-single form-control form-control-border">
                                 <option value=""></option>
-                                @foreach ($produtos as $produto)
+                                @foreach ($produtos as $produto)                                        
                                     <option value="{{ $produto->id }}">{{ $produto->produto_nome }} {{ $produto->variavel_nome }}</option>
                                 @endforeach
                             </select>
@@ -117,7 +127,7 @@
         
         <div class="d-flex justify-content-center col-md-12 mt-3">
             <div class="d-flex justify-content-center col-md-10 row">
-                <div style="height: 500px" class="d-flex justify-content-center align-items-center col-md-3 border">
+                <div style="height: 500px" class="off justify-content-center align-items-center col-md-3 border">
                     @if (session('produto'))
                         <img src="{{ url('storage/variaveis_produtos/'.session("id").'.png') }}" alt="" width="300px" height="300px">
                     @endif  

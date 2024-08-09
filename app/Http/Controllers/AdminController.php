@@ -11,6 +11,7 @@ use App\Models\ProdutosPedido;
 use App\Models\ProdutosVenda;
 use App\Models\VariaveisProduto;
 use App\Models\Venda;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -33,13 +34,13 @@ class AdminController extends Controller
     public function index()
     {
         $dataInicio = date("Y-m-01 00:00:00");
-        $dataAtual = date("Y-m-d H:i:s");
-        $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataAtual])->sum("lucro");
-        $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataAtual])->where("mov_extra", "s")->sum("valor");
+        $dataFim = date("Y-m-d H:i:s");
+        $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+        $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
         $lucro = $lucro_vendas + $lucro_bancos;
-        $faturamento = FluxoBanco::whereBetween("data", [$dataInicio, $dataAtual])->where("tipo", "e")->sum("valor");
-        $vendas = count(Venda::whereBetween("data_venda", [$dataInicio, $dataAtual])->get("id"));
-        $despesas = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataAtual])->sum("valor");
+        $faturamento = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+        $vendas = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+        $despesas = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
 
         $validade = strtotime(date("Y-m-d 00:00:00"));
         $validade = strtotime("+3 month");
@@ -48,6 +49,7 @@ class AdminController extends Controller
         $produtos_vencimento = VariaveisProduto::whereBetween("validade", [date("Y-m-d 00:00:00"), $validade])
         ->join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
         ->select("produtos.nome", "variaveis_produtos.variavel_nome", "variaveis_produtos.variavel_quantidade", "variaveis_produtos.validade")
+        ->orderBy("validade", "asc")
         ->get()
         ->toArray();
 
@@ -89,11 +91,11 @@ class AdminController extends Controller
         ->get()
         ->toArray();
 
-        $global_config = GlobalConfig::get(["minimo_produto"])->first()->toArray();
+        $global_config = GlobalConfig::get(["minimo_produto"])->first() !=  null ? GlobalConfig::get(["minimo_produto"])->first()->toArray() : 10 ;
 
         $produtos_estoque_baixo = VariaveisProduto::join("produtos", "variaveis_produtos.produto_id", "=", "produtos.id")
         ->select("produtos.nome", "variaveis_produtos.variavel_nome", "variaveis_produtos.variavel_quantidade", "variaveis_produtos.ult_compra")
-        ->where("variavel_quantidade", "<=", $global_config["minimo_produto"])
+        ->where("variavel_quantidade", "<=", $global_config == 10 ? $global_config : $global_config["minimo_produto"])
         ->take(20)
         ->get()
         ->toArray();
@@ -133,5 +135,92 @@ class AdminController extends Controller
         // }
 
         return response()->json($dados);
+    }
+
+    function indicadores_ajax(Request $request){
+        if($request->input("data") == "hoje"){
+            $dataInicio = date("Y-m-d 00:00:00");
+            $dataFim = date("Y-m-d 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        } else if($request->input("data") == "semana") {
+            $dataInicio = date("Y-m-d 00:00:00");
+            $dataInicio = strtotime($dataInicio);
+            $dataInicio = strtotime("-1 week");
+            $dataInicio = date("Y-m-d 00:00:00", $dataInicio);;
+            $dataFim = date("Y-m-d 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        } else if($request->input("data") == "mes") {
+            $dataInicio = date("Y-m-01 00:00:00");
+            $dataFim = date("Y-m-d 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        } else if($request->input("data") == "trimestre") {
+            $dataInicio = date("Y-m-d 00:00:00");
+            $dataInicio = strtotime($dataInicio);
+            $dataInicio = strtotime("-3 month");
+            $dataInicio = date("Y-m-d 00:00:00", $dataInicio);;
+            $dataFim = date("Y-m-d 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        } else if($request->input("data") == "ano") {
+            $dataInicio = date("Y-01-01 00:00:00");
+            $dataFim = date("Y-12-31 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        } else if($request->input("data") == "especifico") {
+            $dataInicio = date($request->input("dia")." 00:00:00");
+            $dataFim = date($request->input("dia")." 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        } else {
+            $dataInicio = date($request->input("dia_inicial")." 00:00:00");
+            $dataFim = date($request->input("dia_final")." 23:59:59");
+            $lucro_vendas = Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->sum("lucro");
+            $lucro_bancos = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("mov_extra", "s")->where("tipo", "e")->sum("valor");
+            $dados["lucro"] = $lucro_vendas + $lucro_bancos;
+            $dados["faturamento"] = FluxoBanco::whereBetween("data", [$dataInicio, $dataFim])->where("tipo", "e")->sum("valor");
+            $dados["vendas"] = count(Venda::whereBetween("data_venda", [$dataInicio, $dataFim])->get("id"));
+            $dados["despesas"] = PagarConta::whereBetween("data_pagamento", [$dataInicio, $dataFim])->sum("valor");
+
+            return response()->json($dados);
+        }
     }
 }

@@ -130,11 +130,8 @@ class ComandaController extends Controller
             }
 
             if ($variavel_produto->variavel_quantidade == 0) {
-                if(!isset($$dados_request["variavel_produto_id"])){
-                    $lote = Lote::where("codigo_barras", $dados_request["codigo_barras"])->orderBy("data_cadastro", "asc")->first();
-                } else {
-                    $lote = Lote::where("variavel_produto_id", $dados_request["variavel_produto_id"])->orderBy("data_cadastro", "asc")->first();
-                }
+
+                $lote = Lote::where("variavel_produto_id", $variavel_produto->id)->orderBy("data_cadastro", "asc")->first();
                 
                 if(isset($lote)){
                     $variavel_produto->variavel_quantidade = $lote->quantidade;

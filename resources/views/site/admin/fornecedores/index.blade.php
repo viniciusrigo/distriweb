@@ -24,6 +24,10 @@
                             <label for="cnpj" style="margin: 0px;">CNPJ / CPF<code>*</code></label>
                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="cnpj" name="cnpj" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="14" required>
                         </div>
+                        <div class="form-group col-md-2" style="padding: 3px;">
+                            <label for="contato" style="margin: 0px;">Contato<code>*</code></label>
+                            <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="contato" name="contato" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode == 13" maxlength="11" required>
+                        </div>
                         <div class="form-group col-md-3" style="padding: 3px;">
                             <label for="nome" style="margin: 0px;">Nome<code>*</code></label>
                             <input type="text" style="margin: 0px;" class="form-control form-control-border border-width-2" id="nome" name="nome" maxlength="100">
@@ -73,11 +77,12 @@
                             <table id="tabela" class="table hover compact">
                                 <thead>
                                     <tr>
-                                        <th>CNPJ</th>
+                                        <th style="text-align: left;">CNPJ</th>
+                                        <th style="text-align: left;">Contato</th>
                                         <th>Nome</th>
                                         <th>Fantasia</th>
-                                        <th>CEP</th>
-                                        <th>Nº</th>
+                                        <th style="text-align: left;">CEP</th>
+                                        <th style="text-align: left;">Nº</th>
                                         <th>Município</th>
                                         <th>Status</th>
                                     </tr>
@@ -86,11 +91,12 @@
                                     @isset($fornecedores)
                                         @foreach ($fornecedores as $fornecedor)
                                             <tr class="tb-tr-bd">                        
-                                                <td>{{ $fornecedor->cnpj }}</td>
+                                                <td style="text-align: left;">{{ $fornecedor->cnpj }}</td>
+                                                <td style="text-align: left;">{{ $fornecedor->contato }}</td>
                                                 <td>{{ $fornecedor->nome }}</td>
                                                 <td>{{ $fornecedor->fantasia }}</td>
-                                                <td>{{ $fornecedor->cep }}</td>
-                                                <td>{{ $fornecedor->numero }}</td>
+                                                <td style="text-align: left;">{{ $fornecedor->cep }}</td>
+                                                <td style="text-align: left;">{{ $fornecedor->numero }}</td>
                                                 <td>{{ $fornecedor->municipio }}</td>
                                                 @php                                                
                                                     if ($fornecedor->status == "a") {
@@ -105,6 +111,7 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
+                                        <th></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>

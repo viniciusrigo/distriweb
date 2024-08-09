@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'https://distriweb.com.br/admin/indicadores-ajax',
+        'https://distriweb.com.br/admin/dados',
+        'https://distriweb.com.br/admin/comandas/novo-pedido',
     ];
 }

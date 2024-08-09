@@ -148,7 +148,7 @@ class PDV2Controller extends Controller
                     if ($produto->variavel_quantidade == 0 || $produto->variavel_quantidade == null) {
                         //dd($produto);
                         /* VERIFICA SE TEM UM LOTE DA VARIÁVEL */
-                        $lote = Lote::where("codigo_barras", $request->input("codigo_barras"))->orderBy("data_cadastro", "asc")->first();
+                        $lote = Lote::where("variavel_produto_id", $produto->id)->orderBy("data_cadastro", "asc")->first();
                         if(isset($lote)){
                             $produto->variavel_quantidade = $lote->quantidade;
                             $produto->preco = $lote->preco;

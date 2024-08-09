@@ -198,7 +198,7 @@
                     url: "https://cdn.datatables.net/plug-ins/1.11.5/i18n/pt-BR.json",
                 },
                 pagingType: 'first_last_numbers',
-                order: [[3, 'asc']],
+                order: [[0, 'desc']],
             });
 
             $('.alert').addClass("show");

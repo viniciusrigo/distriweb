@@ -20,14 +20,14 @@
                 <span class="info-box-icon bg-info"><i class="fas fa fa-info"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Produtos</span>
-                    <span class="info-box-number">{{ $quantidade_produtos > 0  ? $quantidade_produtos : "" }}</span>
+                    <span class="info-box-number">{{ count($produtos) }}</span>
                 </div>           
             </div>
             <div class="info-box shadow-none col-md-3 col-sm-6 col-12 m-1">
                 <span class="info-box-icon bg-warning"><i class="fa-solid fa-box-archive text-white"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Quatidade</span>
-                    <span class="info-box-number">{{ count($lista_produtos) > 0 ? $lista_produtos->sum('quantidade') : "" }}</span>
+                    <span class="info-box-number">{{ count($produtos) > 0 ? $produtos->sum('variavel_quantidade') : "" }}</span>
                 </div>           
             </div>
         </div>
@@ -58,7 +58,6 @@
                                         <th>Produto</th>
                                         <th style="text-align:left">Quantidade</th>
                                         <th>Categoria</th>
-                                        <th>Ativo</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -74,23 +73,6 @@
                                                 <td style="text-align:left">{{ $produto->quantidade }}</td>
                                                 <td>{{ $produto->categoria_nome }}</td>
                                                 <td>
-                                                    @if ($produto->ativo == 's')
-                                                    <form action="/admin/estoque/produtos/produto-status/" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="status_ativo" value="ativado">
-                                                        <input type="hidden" name="produto_id" value="{{ $produto->id }}">
-                                                        <input onChange="this.form.submit()" type="checkbox" checked>
-                                                    </form>
-                                                    @else
-                                                    <form action="/admin/estoque/produtos/produto-status/" method="POST">
-                                                        @csrf
-                                                        <input type="hidden" name="status_ativo" value="desativado">
-                                                        <input type="hidden" name="produto_id" value="{{ $produto->id }}">
-                                                        <input onChange="this.form.submit()" type="checkbox">
-                                                    </form>
-                                                    @endif
-                                                </td>
-                                                <td>
                                                     <a href="{{ route('admin.estoque.produtos.page-edit', $produto->id) }}" class="badge badge-info">Editar</a>
                                                 </td>
                                             </tr>
@@ -99,7 +81,6 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th></th>
                                         <th></th>
                                         <th></th>
                                         <th></th>
